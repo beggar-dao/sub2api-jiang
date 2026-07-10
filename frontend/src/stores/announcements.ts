@@ -13,7 +13,7 @@ export const useAnnouncementStore = defineStore('announcements', () => {
   const popupQueue = ref<UserAnnouncement[]>([])
   const currentPopup = ref<UserAnnouncement | null>(null)
 
-  // Session-scoped dedup set — not reactive, used as plain lookup only
+  // Session-scoped dedup set — non-reactive, serves as a simple lookup table
   let shownPopupIds = new Set<number>()
 
   // Getters
@@ -28,7 +28,7 @@ export const useAnnouncementStore = defineStore('announcements', () => {
       return
     }
 
-    // Set immediately to prevent concurrent duplicate requests
+    // Set right away to block any overlapping duplicate requests
     lastFetchTime.value = now
 
     try {
@@ -37,7 +37,7 @@ export const useAnnouncementStore = defineStore('announcements', () => {
       announcements.value = all.slice(0, 20)
       enqueueNewPopups()
     } catch (err: any) {
-      // Revert throttle timestamp on failure so retry is allowed
+      // Reset throttle timestamp on failure so a retry remains possible
       lastFetchTime.value = 0
       console.error('Failed to fetch announcements:', err)
     } finally {
@@ -76,10 +76,10 @@ export const useAnnouncementStore = defineStore('announcements', () => {
     const id = currentPopup.value.id
     currentPopup.value = null
 
-    // Mark as read (fire-and-forget, UI already updated)
+    // Mark as read (fire-and-forget, the UI has already been updated)
     markAsRead(id)
 
-    // Show next popup after a short delay
+    // Display the next popup following a brief delay
     if (popupQueue.value.length > 0) {
       setTimeout(() => showNextPopup(), 300)
     }

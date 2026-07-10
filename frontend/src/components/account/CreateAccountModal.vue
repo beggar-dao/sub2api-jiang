@@ -869,7 +869,7 @@
       <!-- Vertex Service Account -->
       <div v-if="(form.platform === 'gemini' || form.platform === 'anthropic') && accountCategory === 'service_account'" class="space-y-4">
         <div>
-          <label class="input-label">Service Account JSON</label>
+          <label class="input-label">Service Account Credentials JSON</label>
           <input
             ref="vertexServiceAccountFileInput"
             type="file"
@@ -921,7 +921,7 @@
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label class="input-label">Project ID</label>
+            <label class="input-label">Project Identifier</label>
             <input
               v-model="vertexProjectId"
               type="text"
@@ -931,7 +931,7 @@
             />
           </div>
           <div>
-            <label class="input-label">Location</label>
+            <label class="input-label">Region</label>
             <select
               v-model="vertexLocation"
               required
@@ -4362,9 +4362,9 @@ const buildMixedChannelDetails = (resp?: CheckMixedChannelResponse) => {
     return null
   }
   return {
-    groupName: details.group_name || 'Unknown',
-    currentPlatform: details.current_platform || 'Unknown',
-    otherPlatform: details.other_platform || 'Unknown'
+    groupName: details.group_name || 'Unspecified',
+    currentPlatform: details.current_platform || 'Unspecified',
+    otherPlatform: details.other_platform || 'Unspecified'
   }
 }
 
@@ -5112,14 +5112,14 @@ const handleGrokValidateRT = async (refreshTokenInput: string) => {
         const tokenInfo = await grokOAuth.validateRefreshToken(refreshTokens[i], form.proxy_id)
         if (!tokenInfo) {
           failedCount++
-          errors.push(`#${i + 1}: ${grokOAuth.error.value || 'Validation failed'}`)
+          errors.push(`#${i + 1}: ${grokOAuth.error.value || 'Token check failed'}`)
           grokOAuth.error.value = ''
           continue
         }
 
         const credentials = grokOAuth.buildCredentials(tokenInfo)
         const extra = grokOAuth.buildExtraInfo(tokenInfo)
-        const accountName = refreshTokens.length > 1 ? `${form.name || tokenInfo.email || 'Grok OAuth Account'} #${i + 1}` : (form.name || tokenInfo.email || 'Grok OAuth Account')
+        const accountName = refreshTokens.length > 1 ? `${form.name || tokenInfo.email || 'Grok OAuth'} #${i + 1}` : (form.name || tokenInfo.email || 'Grok OAuth')
 
         const modelMapping = buildModelMappingObject(modelRestrictionMode.value, allowedModels.value, modelMappings.value)
         if (modelMapping) {
@@ -5148,7 +5148,7 @@ const handleGrokValidateRT = async (refreshTokenInput: string) => {
         successCount++
       } catch (error: any) {
         failedCount++
-        const errMsg = error.response?.data?.detail || error.message || 'Unknown error'
+        const errMsg = error.response?.data?.detail || error.message || 'Unspecified error'
         errors.push(`#${i + 1}: ${errMsg}`)
       }
     }
@@ -5445,7 +5445,7 @@ const handleOpenAIBatchRT = async (refreshTokenInput: string, clientId?: string)
         )
         if (!tokenInfo) {
           failedCount++
-          errors.push(`#${i + 1}: ${oauthClient.error.value || 'Validation failed'}`)
+          errors.push(`#${i + 1}: ${oauthClient.error.value || 'Token check failed'}`)
           oauthClient.error.value = ''
           continue
         }
@@ -5472,7 +5472,7 @@ const handleOpenAIBatchRT = async (refreshTokenInput: string, clientId?: string)
         }
 
         // Generate account name; fallback to email if name is empty (ent schema requires NotEmpty)
-        const baseName = form.name || tokenInfo.email || 'OpenAI OAuth Account'
+        const baseName = form.name || tokenInfo.email || 'OpenAI OAuth'
         const accountName = refreshTokens.length > 1 ? `${baseName} #${i + 1}` : baseName
 
         if (shouldCreateOpenAI) {
@@ -5497,7 +5497,7 @@ const handleOpenAIBatchRT = async (refreshTokenInput: string, clientId?: string)
         successCount++
       } catch (error: any) {
         failedCount++
-        const errMsg = error.response?.data?.detail || error.message || 'Unknown error'
+        const errMsg = error.response?.data?.detail || error.message || 'Unspecified error'
         errors.push(`#${i + 1}: ${errMsg}`)
       }
     }
@@ -5563,7 +5563,7 @@ const handleAntigravityValidateRT = async (refreshTokenInput: string) => {
         )
         if (!tokenInfo) {
           failedCount++
-          errors.push(`#${i + 1}: ${antigravityOAuth.error.value || 'Validation failed'}`)
+          errors.push(`#${i + 1}: ${antigravityOAuth.error.value || 'Token check failed'}`)
           antigravityOAuth.error.value = ''
           continue
         }
@@ -5595,7 +5595,7 @@ const handleAntigravityValidateRT = async (refreshTokenInput: string) => {
         successCount++
       } catch (error: any) {
         failedCount++
-        const errMsg = error.response?.data?.detail || error.message || 'Unknown error'
+        const errMsg = error.response?.data?.detail || error.message || 'Unspecified error'
         errors.push(`#${i + 1}: ${errMsg}`)
       }
     }

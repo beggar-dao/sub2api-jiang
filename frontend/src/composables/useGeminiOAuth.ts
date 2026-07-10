@@ -101,7 +101,7 @@ export function useGeminiOAuth() {
       const tokenInfo = await adminAPI.gemini.exchangeCode(payload as any)
       return tokenInfo as GeminiTokenInfo
     } catch (err: any) {
-      // Check for specific missing project_id error
+      // Detect a specific "missing project_id" error
       const errorMessage = err.message || err.response?.data?.message || ''
       if (errorMessage.includes('missing project_id')) {
         error.value = t('admin.accounts.oauth.gemini.missingProjectId')
@@ -144,7 +144,7 @@ export function useGeminiOAuth() {
     try {
       return await adminAPI.gemini.getCapabilities()
     } catch (err: any) {
-      // Capabilities are optional for older servers; don't block the UI.
+      // Capabilities are optional on older server versions; avoid blocking the UI.
       return null
     }
   }

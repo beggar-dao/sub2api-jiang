@@ -364,7 +364,7 @@
         <div v-if="grokLocalUsage" class="mb-0.5 flex items-center">
           <div class="flex items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
             <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
-              {{ formatWindowRequests(grokLocalUsage) }} req
+              {{ formatWindowRequests(grokLocalUsage) }} requests
             </span>
             <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
               {{ formatWindowTokens(grokLocalUsage) }}
@@ -465,7 +465,7 @@
         >
           <div class="flex items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
             <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
-              {{ formatKeyRequests }} req
+              {{ formatKeyRequests }} requests
             </span>
             <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
               {{ formatKeyTokens }}
@@ -512,7 +512,7 @@
             :color="bar.color"
           />
           <p class="mt-1 text-[9px] leading-tight text-gray-400 dark:text-gray-500 italic">
-            * {{ t('admin.accounts.gemini.quotaPolicy.simulatedNote') || 'Simulated quota' }}
+            * {{ t('admin.accounts.gemini.quotaPolicy.simulatedNote') || 'Estimated quota' }}
           </p>
         </div>
         <!-- AI Studio Client OAuth: show unlimited flow (no usage tracking) -->
@@ -541,7 +541,7 @@
       >
         <div class="flex items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
           <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
-            {{ formatKeyRequests }} req
+            {{ formatKeyRequests }} requests
           </span>
           <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
             {{ formatKeyTokens }}

@@ -1,13 +1,13 @@
 /**
- * 错误请求/用量明细共享的徽章配色与列映射。
- * 配色统一 bg-X-100/text-X-800 体系,与 UsageTable 一致。
+ * 错误请求/用量明细共用的徽章配色与列映射。
+ * 配色统一采用 bg-X-100/text-X-800 体系,与 UsageTable 保持一致。
  */
 
 import type { UsageRequestType } from '@/types'
 
 export type UsageRequestKind = UsageRequestType
 
-/** 状态码徽章:≥500 红、429 紫、≥400 琥珀、其余灰 */
+/** 状态码徽章:≥500 红色、429 紫色、≥400 琥珀色、其余灰色 */
 export function statusCodeBadgeClass(code: number): string {
   if (code >= 500) return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
   if (code === 429) return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
@@ -15,7 +15,7 @@ export function statusCodeBadgeClass(code: number): string {
   return 'bg-gray-100 text-gray-800 dark:bg-dark-700 dark:text-gray-200'
 }
 
-/** 请求类型徽章配色(cyber 红、ws 紫、stream 蓝、sync 灰、未知琥珀) */
+/** 请求类型徽章配色(cyber 红色、ws 紫色、stream 蓝色、sync 灰色、未知琥珀色) */
 export function requestTypeBadgeClass(kind: UsageRequestKind): string {
   if (kind === 'cyber') return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
   if (kind === 'ws_v2') return 'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200'
@@ -24,7 +24,7 @@ export function requestTypeBadgeClass(kind: UsageRequestKind): string {
   return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
 }
 
-/** 请求类型 i18n 键(展示方自行 t()) */
+/** 请求类型 i18n 键(展示方自行调用 t()) */
 export function requestTypeLabelKey(kind: UsageRequestKind): string {
   if (kind === 'cyber') return 'usage.cyber'
   if (kind === 'ws_v2') return 'usage.ws'
@@ -35,7 +35,7 @@ export function requestTypeLabelKey(kind: UsageRequestKind): string {
 
 /**
  * 数字 request_type(1 同步/2 流式/3 WS)→ kind;
- * 缺失时按 stream 布尔回退,两者都缺返回 null(展示为 -)。
+ * 缺失时按 stream 布尔回退,两者皆缺则返回 null(展示为 -)。
  */
 export function numericRequestTypeKind(
   requestType?: number | null,
@@ -48,14 +48,14 @@ export function numericRequestTypeKind(
   return null
 }
 
-/** 错误表列 key → 后端 sort_by(status 列实际按 status_code 排序) */
+/** 错误表列 key → 后端 sort_by(status 列实际上按 status_code 排序) */
 export function mapErrorSortKey(key: string): string {
   return key === 'status' ? 'status_code' : key
 }
 
 /**
  * 错误请求筛选的常用状态码固定候选(管理端 + 用户端共用)。
- * 用固定列表而非「当前页出现过的码」派生,避免目标状态码只在后续页/筛选外时无法选中
- * ——后端 status_code 过滤对全量数据生效,选项不应被当前页数据限制。
+ * 采用固定列表而非「当前页出现过的码」来派生,避免目标状态码仅在后续页/筛选外时无法选中
+ * ——后端 status_code 过滤针对全量数据生效,选项不应受限于当前页数据。
  */
 export const COMMON_ERROR_STATUS_CODES = [400, 401, 403, 404, 408, 413, 429, 499, 500, 502, 503, 504, 529]

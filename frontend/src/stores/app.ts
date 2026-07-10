@@ -1,6 +1,6 @@
 /**
  * Application State Store
- * Manages global UI state including sidebar, loading indicators, and toast notifications
+ * Maintains global UI state covering sidebar, loading indicators, and toast notifications
  */
 
 import { defineStore } from 'pinia'
@@ -35,7 +35,7 @@ export const useAppStore = defineStore('app', () => {
   const cachedPublicSettings = ref<PublicSettings | null>(null)
   let publicSettingsRequest: Promise<PublicSettings | null> | null = null
 
-  // Version cache state
+  // Version cache variables
   const versionLoaded = ref<boolean>(false)
   const versionLoading = ref<boolean>(false)
   const currentVersion = ref<string>('')
@@ -44,7 +44,7 @@ export const useAppStore = defineStore('app', () => {
   const buildType = ref<string>('source')
   const releaseInfo = ref<ReleaseInfo | null>(null)
 
-  // Auto-incrementing ID for toasts
+  // Self-incrementing counter used for toast identifiers
   let toastIdCounter = 0
 
   // ==================== Computed ====================
@@ -57,38 +57,38 @@ export const useAppStore = defineStore('app', () => {
   // ==================== Actions ====================
 
   /**
-   * Toggle sidebar collapsed state
+   * Toggle the sidebar between collapsed and expanded
    */
   function toggleSidebar(): void {
     sidebarCollapsed.value = !sidebarCollapsed.value
   }
 
   /**
-   * Set sidebar collapsed state explicitly
-   * @param collapsed - Whether sidebar should be collapsed
+   * Explicitly set whether the sidebar is collapsed
+   * @param collapsed - Whether the sidebar ought to be collapsed
    */
   function setSidebarCollapsed(collapsed: boolean): void {
     sidebarCollapsed.value = collapsed
   }
 
   /**
-   * Toggle mobile sidebar open state
+   * Toggle the mobile sidebar open/closed
    */
   function toggleMobileSidebar(): void {
     mobileOpen.value = !mobileOpen.value
   }
 
   /**
-   * Set mobile sidebar open state explicitly
-   * @param open - Whether mobile sidebar should be open
+   * Explicitly set whether the mobile sidebar is open
+   * @param open - Whether the mobile sidebar should stay open
    */
   function setMobileOpen(open: boolean): void {
     mobileOpen.value = open
   }
 
   /**
-   * Set global loading state
-   * @param isLoading - Whether app is in loading state
+   * Toggle the global loading indicator
+   * @param isLoading - Whether the app is currently in a loading state
    */
   function setLoading(isLoading: boolean): void {
     if (isLoading) {
@@ -100,11 +100,11 @@ export const useAppStore = defineStore('app', () => {
   }
 
   /**
-   * Show a toast notification
-   * @param type - Type of toast (success, error, info, warning)
-   * @param message - Toast message content
-   * @param duration - Auto-dismiss duration in ms (undefined = no auto-dismiss)
-   * @returns Toast ID for manual dismissal
+   * Display a toast notification
+   * @param type - Toast category (success, error, info, warning)
+   * @param message - Text content shown in the toast
+   * @param duration - Auto-dismiss timeout in ms (undefined means no auto-dismiss)
+   * @returns Toast ID that can be used for manual dismissal
    */
   function showToast(type: ToastType, message: string, duration?: number): string {
     const id = `toast-${++toastIdCounter}`
@@ -118,7 +118,7 @@ export const useAppStore = defineStore('app', () => {
 
     toasts.value.push(toast)
 
-    // Auto-dismiss if duration is specified
+    // Auto-dismiss when a duration is provided
     if (duration !== undefined) {
       setTimeout(() => {
         hideToast(id)
@@ -129,44 +129,44 @@ export const useAppStore = defineStore('app', () => {
   }
 
   /**
-   * Show a success toast
-   * @param message - Success message
-   * @param duration - Auto-dismiss duration in ms (default: 3000)
+   * Display a success toast
+   * @param message - Success text
+   * @param duration - Auto-dismiss timeout in ms (default: 3000)
    */
   function showSuccess(message: string, duration: number = 3000): string {
     return showToast('success', message, duration)
   }
 
   /**
-   * Show an error toast
-   * @param message - Error message
-   * @param duration - Auto-dismiss duration in ms (default: 5000)
+   * Display an error toast
+   * @param message - Error text
+   * @param duration - Auto-dismiss timeout in ms (default: 5000)
    */
   function showError(message: string, duration: number = 5000): string {
     return showToast('error', message, duration)
   }
 
   /**
-   * Show an info toast
-   * @param message - Info message
-   * @param duration - Auto-dismiss duration in ms (default: 3000)
+   * Display an info toast
+   * @param message - Info text
+   * @param duration - Auto-dismiss timeout in ms (default: 3000)
    */
   function showInfo(message: string, duration: number = 3000): string {
     return showToast('info', message, duration)
   }
 
   /**
-   * Show a warning toast
-   * @param message - Warning message
-   * @param duration - Auto-dismiss duration in ms (default: 4000)
+   * Display a warning toast
+   * @param message - Warning text
+   * @param duration - Auto-dismiss timeout in ms (default: 4000)
    */
   function showWarning(message: string, duration: number = 4000): string {
     return showToast('warning', message, duration)
   }
 
   /**
-   * Hide a specific toast by ID
-   * @param id - Toast ID to hide
+   * Dismiss a particular toast by its ID
+   * @param id - Toast identifier to remove
    */
   function hideToast(id: string): void {
     const index = toasts.value.findIndex((t) => t.id === id)
@@ -176,17 +176,17 @@ export const useAppStore = defineStore('app', () => {
   }
 
   /**
-   * Clear all toasts
+   * Remove every toast currently displayed
    */
   function clearAllToasts(): void {
     toasts.value = []
   }
 
   /**
-   * Execute an async operation with loading state
-   * Automatically manages loading indicator
-   * @param operation - Async operation to execute
-   * @returns Promise resolving to operation result
+   * Run an async task while toggling the loading indicator
+   * The loading flag is managed automatically
+   * @param operation - Async function that will be executed
+   * @returns Promise that resolves with the operation's result
    */
   async function withLoading<T>(operation: () => Promise<T>): Promise<T> {
     setLoading(true)
@@ -198,11 +198,11 @@ export const useAppStore = defineStore('app', () => {
   }
 
   /**
-   * Execute an async operation with loading and error handling
-   * Shows error toast on failure
-   * @param operation - Async operation to execute
-   * @param errorMessage - Custom error message (optional)
-   * @returns Promise resolving to operation result or null on error
+   * Run an async task with loading indicator and error handling
+   * Surfaces an error toast when the operation fails
+   * @param operation - Async function that will be executed
+   * @param errorMessage - Custom error text (optional)
+   * @returns Promise that resolves with the result, or null when an error occurs
    */
   async function withLoadingAndError<T>(
     operation: () => Promise<T>,
@@ -224,8 +224,8 @@ export const useAppStore = defineStore('app', () => {
   }
 
   /**
-   * Reset app state to defaults
-   * Useful for cleanup or testing
+   * Restore app state back to its defaults
+   * Handy for teardown or testing scenarios
    */
   function reset(): void {
     sidebarCollapsed.value = false
@@ -237,11 +237,11 @@ export const useAppStore = defineStore('app', () => {
   // ==================== Version Management ====================
 
   /**
-   * Fetch version info (uses cache unless force=true)
-   * @param force - Force refresh from API
+   * Retrieve version information (served from cache unless force=true)
+   * @param force - When true, bypass the cache and pull fresh data from the API
    */
   async function fetchVersion(force = false): Promise<VersionInfo | null> {
-    // Return cached data if available and not forcing refresh
+    // Serve cached data when available and a refresh is not being forced
     if (versionLoaded.value && !force) {
       return {
         current_version: currentVersion.value,
@@ -253,7 +253,7 @@ export const useAppStore = defineStore('app', () => {
       }
     }
 
-    // Prevent duplicate requests
+    // Avoid sending the same request twice
     if (versionLoading.value) {
       return null
     }
@@ -277,7 +277,7 @@ export const useAppStore = defineStore('app', () => {
   }
 
   /**
-   * Clear version cache (e.g., after update)
+   * Invalidate the version cache (e.g., once an update is done)
    */
   function clearVersionCache(): void {
     versionLoaded.value = false
@@ -287,7 +287,7 @@ export const useAppStore = defineStore('app', () => {
   // ==================== Public Settings Management ====================
 
   /**
-   * Apply settings to store state (internal helper to avoid code duplication)
+   * Populate store state with the given settings (internal helper that prevents duplicated logic)
    */
   function applySettings(config: PublicSettings): void {
     if (typeof window !== 'undefined') {
@@ -304,23 +304,23 @@ export const useAppStore = defineStore('app', () => {
   }
 
   /**
-   * Fetch public settings (uses cache unless force=true)
-   * @param force - Force refresh from API
+   * Retrieve public settings (served from cache unless force=true)
+   * @param force - When true, bypass the cache and fetch fresh data from the API
    */
   function fetchPublicSettings(force = false): Promise<PublicSettings | null> {
-    // An active request always wins over cache/force semantics so every caller observes
-    // the same refresh result and no older request can overwrite a newer one.
+    // An in-flight request always takes precedence over cache/force semantics so that
+    // every caller receives the same refresh result and a stale request cannot overwrite a newer one.
     if (publicSettingsRequest) {
       return publicSettingsRequest
     }
 
-    // Check for injected config from server (eliminates flash)
+    // Pick up server-injected config if present (prevents a flash of stale content)
     if (!publicSettingsLoaded.value && !force && window.__APP_CONFIG__) {
       applySettings(window.__APP_CONFIG__)
       return Promise.resolve(window.__APP_CONFIG__)
     }
 
-    // Return cached data if available and not forcing refresh
+    // Serve cached data when available and a refresh is not being forced
     if (publicSettingsLoaded.value && !force) {
       if (cachedPublicSettings.value) {
         return Promise.resolve({ ...cachedPublicSettings.value })
@@ -403,7 +403,7 @@ export const useAppStore = defineStore('app', () => {
   }
 
   /**
-   * Clear public settings cache
+   * Invalidate the public settings cache
    */
   function clearPublicSettingsCache(): void {
     publicSettingsLoaded.value = false
@@ -411,9 +411,9 @@ export const useAppStore = defineStore('app', () => {
   }
 
   /**
-   * Initialize settings from injected config (window.__APP_CONFIG__)
-   * This is called synchronously before Vue app mounts to prevent flash
-   * @returns true if config was found and applied, false otherwise
+   * Seed settings from the injected config (window.__APP_CONFIG__)
+   * Invoked synchronously before the Vue app mounts so no flash occurs
+   * @returns true when the config was located and applied, false otherwise
    */
   function initFromInjectedConfig(): boolean {
     if (window.__APP_CONFIG__) {
@@ -433,7 +433,7 @@ export const useAppStore = defineStore('app', () => {
     loading,
     toasts,
 
-    // Public settings state
+    // Public settings variables
     publicSettingsLoaded,
     siteName,
     siteLogo,
@@ -443,7 +443,7 @@ export const useAppStore = defineStore('app', () => {
     docUrl,
     cachedPublicSettings,
 
-    // Version state
+    // Version variables
     versionLoaded,
     versionLoading,
     currentVersion,

@@ -214,7 +214,7 @@
                 inputmode="numeric"
                 maxlength="6"
                 class="input w-full"
-                placeholder="123456"
+                placeholder="e.g. 123456"
                 :disabled="isSubmitting"
                 @keyup.enter="handleSubmitTotpChallenge"
               />

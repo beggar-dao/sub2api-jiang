@@ -1,6 +1,6 @@
 /**
  * Subscription Store
- * Global state management for user subscriptions with caching and deduplication
+ * Centralised state for user subscriptions, backed by caching and request de-duplication
  */
 
 import { defineStore } from 'pinia'
@@ -8,10 +8,10 @@ import { ref, computed } from 'vue'
 import subscriptionsAPI from '@/api/subscriptions'
 import type { UserSubscription } from '@/types'
 
-// Cache TTL: 60 seconds
+// Cache validity window: 60 seconds
 const CACHE_TTL_MS = 60_000
 
-// Request generation counter to invalidate stale in-flight responses
+// Generation counter used to discard stale responses that arrive out of order
 let requestGeneration = 0
 
 export const useSubscriptionStore = defineStore('subscriptions', () => {
@@ -21,23 +21,23 @@ export const useSubscriptionStore = defineStore('subscriptions', () => {
   const loaded = ref(false)
   const lastFetchedAt = ref<number | null>(null)
 
-  // In-flight request deduplication
+  // In-flight request de-duplication
   let activePromise: Promise<UserSubscription[]> | null = null
 
-  // Auto-refresh interval
+  // Interval handle for the auto-refresh poller
   let pollerInterval: ReturnType<typeof setInterval> | null = null
 
   // Computed
   const hasActiveSubscriptions = computed(() => activeSubscriptions.value.length > 0)
 
   /**
-   * Fetch active subscriptions with caching and deduplication
-   * @param force - Force refresh even if cache is valid
+   * Retrieve active subscriptions, backed by caching and request de-duplication
+   * @param force - Bypass the cache and fetch fresh data even when it is still valid
    */
   async function fetchActiveSubscriptions(force = false): Promise<UserSubscription[]> {
     const now = Date.now()
 
-    // Return cached data if valid
+    // Serve cached data when it is still valid
     if (
       !force &&
       loaded.value &&
@@ -47,14 +47,14 @@ export const useSubscriptionStore = defineStore('subscriptions', () => {
       return activeSubscriptions.value
     }
 
-    // Return in-flight request if exists (deduplication)
+    // Reuse an in-flight request when one exists (de-duplication)
     if (activePromise && !force) {
       return activePromise
     }
 
     const currentGeneration = ++requestGeneration
 
-    // Start new request
+    // Kick off a fresh request
     loading.value = true
     const requestPromise = subscriptionsAPI
       .getActiveSubscriptions()
@@ -83,7 +83,7 @@ export const useSubscriptionStore = defineStore('subscriptions', () => {
   }
 
   /**
-   * Start auto-refresh polling 
+   * Begin polling for auto-refresh
    */
   function startPolling() {
     if (pollerInterval) return
@@ -96,7 +96,7 @@ export const useSubscriptionStore = defineStore('subscriptions', () => {
   }
 
   /**
-   * Stop auto-refresh polling
+   * Halt the auto-refresh poller
    */
   function stopPolling() {
     if (pollerInterval) {
@@ -106,7 +106,7 @@ export const useSubscriptionStore = defineStore('subscriptions', () => {
   }
 
   /**
-   * Clear all subscription data and stop polling
+   * Wipe all subscription data and halt polling
    */
   function clear() {
     requestGeneration++
@@ -118,7 +118,7 @@ export const useSubscriptionStore = defineStore('subscriptions', () => {
   }
 
   /**
-   * Invalidate cache (force next fetch to reload)
+   * Mark the cache as stale so the next fetch reloads fresh data
    */
   function invalidateCache() {
     lastFetchedAt.value = null

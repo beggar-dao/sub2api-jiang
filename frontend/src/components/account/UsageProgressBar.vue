@@ -7,7 +7,7 @@
     >
       <div class="flex items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
         <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
-          {{ formatRequests }} req
+          {{ formatRequests }} requests
         </span>
         <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
           {{ formatTokens }}

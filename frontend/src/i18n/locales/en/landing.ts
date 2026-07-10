@@ -1,7 +1,7 @@
 export default {
   batchImageGuide: {
     title: 'Batch Image Generation',
-    description: 'Submit multiple prompts in one job and download the generated images when complete'
+    description: 'Submit multiple prompts in a single job and download the generated images once complete'
   },
   // Home Page
   home: {
@@ -15,8 +15,8 @@ export default {
     getStarted: 'Get Started',
     goToDashboard: 'Go to Dashboard',
     // User-focused value proposition
-    heroSubtitle: 'One Key, All AI Models',
-    heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
+    heroSubtitle: 'One Key, Every AI Model',
+    heroDescription: 'No need to juggle multiple subscriptions. Reach Claude, GPT, Gemini and more with just one API key',
     tags: {
       subscriptionToApi: 'Subscription to API',
       stickySession: 'Session Persistence',
@@ -28,7 +28,7 @@ export default {
       items: {
         expensive: {
           title: 'High Subscription Costs',
-          desc: 'Paying for multiple AI subscriptions that add up every month'
+          desc: 'Paying for multiple AI subscriptions that pile up every month'
         },
         complex: {
           title: 'Account Chaos',
@@ -51,7 +51,7 @@ export default {
     },
     features: {
       unifiedGateway: 'One-Click Access',
-      unifiedGatewayDesc: 'Get a single API key to call all connected AI models. No separate applications needed.',
+      unifiedGatewayDesc: 'Get a single API key to call every connected AI model. No separate applications needed.',
       multiAccount: 'Always Reliable',
       multiAccountDesc: 'Smart routing across multiple upstream accounts with automatic failover. Say goodbye to errors.',
       balanceQuota: 'Pay What You Use',
@@ -121,7 +121,7 @@ export default {
     placeholder: 'sk-ant-mirror-xxxxxxxxxxxx',
     query: 'Query',
     querying: 'Querying...',
-    privacyNote: 'Your Key is processed locally in the browser and will not be stored',
+    privacyNote: 'Your Key is processed locally in the browser and is never stored',
     dateRange: 'Date Range:',
     dateRangeToday: 'Today',
     dateRange7d: '7 Days',
@@ -233,7 +233,7 @@ export default {
     },
     ready: {
       title: 'Ready to Install',
-      description: 'Review your configuration and complete setup',
+      description: 'Review your configuration and finish setup',
       database: 'Database',
       redis: 'Redis',
       adminEmail: 'Admin Email'

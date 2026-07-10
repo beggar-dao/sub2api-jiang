@@ -1,6 +1,6 @@
 /**
  * Pinia Stores Export
- * Central export point for all application stores
+ * Single entry point that re-exports every store used across the app
  */
 
 export { useAuthStore } from './auth'

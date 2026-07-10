@@ -1485,13 +1485,13 @@ const umqModeOptions = computed(() => [
 
 // Common HTTP error codes
 const commonErrorCodes = [
-  { value: 401, label: 'Unauthorized' },
-  { value: 403, label: 'Forbidden' },
-  { value: 429, label: 'Rate Limit' },
-  { value: 500, label: 'Server Error' },
-  { value: 502, label: 'Bad Gateway' },
-  { value: 503, label: 'Unavailable' },
-  { value: 529, label: 'Overloaded' }
+  { value: 401, label: 'Auth Required' },
+  { value: 403, label: 'Access Denied' },
+  { value: 429, label: 'Throttled' },
+  { value: 500, label: 'Internal Error' },
+  { value: 502, label: 'Gateway Error' },
+  { value: 503, label: 'Service Down' },
+  { value: 529, label: 'Over capacity' }
 ]
 
 const statusOptions = computed(() => [

@@ -2,14 +2,14 @@ import { ref, onMounted, onUnmounted, type Ref } from 'vue'
 import type { Virtualizer } from '@tanstack/vue-virtual'
 
 /**
- * WeChat-style swipe/drag to select rows in a DataTable,
- * with a semi-transparent marquee overlay showing the selection area.
+ * WeChat-like swipe/drag row selection for DataTable,
+ * featuring a translucent marquee overlay that visualizes the selection rectangle.
  *
- * Features:
- *  - Start dragging inside the current table-page layout's non-text area
- *  - Mouse wheel scrolling continues selecting new rows
- *  - Auto-scroll when dragging near viewport edges
- *  - 5px drag threshold to avoid accidental selection on click
+ * Capabilities:
+ *  - Dragging initiates within non-text regions of the current table-page layout
+ *  - Mouse wheel scrolling keeps extending the selection to newly visible rows
+ *  - Automatic scrolling kicks in when the cursor approaches viewport boundaries
+ *  - A 5-pixel drag threshold prevents unintended selection triggered by plain clicks
  *
  * Usage:
  *   const containerRef = ref<HTMLElement | null>(null)
@@ -20,7 +20,7 @@ import type { Virtualizer } from '@tanstack/vue-virtual'
  *   })
  *
  * Wrap <DataTable> with <div ref="containerRef">...</div>
- * DataTable rows must have data-row-id attribute.
+ * Each DataTable row must carry a data-row-id attribute.
  */
 export interface SwipeSelectAdapter {
   isSelected: (id: number) => boolean
@@ -30,11 +30,11 @@ export interface SwipeSelectAdapter {
 }
 
 export interface SwipeSelectVirtualContext {
-  /** Get the virtualizer instance */
+  /** Retrieve the virtualizer instance */
   getVirtualizer: () => Virtualizer<HTMLElement, Element> | null
-  /** Get all sorted data */
+  /** Retrieve the full sorted dataset */
   getSortedData: () => any[]
-  /** Get row ID from data row */
+  /** Extract the row ID from a given data row */
   getRowId: (row: any, index: number) => number
 }
 
@@ -79,18 +79,18 @@ export function useSwipeSelect(
     return Number.isFinite(id) ? id : null
   }
 
-  /** Find the row index closest to a viewport Y coordinate (binary search). */
+  /** Locate the row index nearest to a viewport Y coordinate via binary search. */
   function findRowIndexAtY(clientY: number): number {
     const len = cachedRows.length
     if (len === 0) return -1
 
-    // Boundary checks
+    // Edge-case lookups for the first and last rows
     const firstRect = cachedRows[0].getBoundingClientRect()
     if (clientY < firstRect.top) return 0
     const lastRect = cachedRows[len - 1].getBoundingClientRect()
     if (clientY > lastRect.bottom) return len - 1
 
-    // Binary search — rows are vertically ordered
+    // Binary search — rows follow vertical ordering
     let lo = 0, hi = len - 1
     while (lo <= hi) {
       const mid = (lo + hi) >>> 1
@@ -99,7 +99,7 @@ export function useSwipeSelect(
       else if (clientY > rect.bottom) lo = mid + 1
       else return mid
     }
-    // In a gap between rows — pick the closer one
+    // Falling in the gap between two rows — choose the nearer one
     if (hi < 0) return 0
     if (lo >= len) return len - 1
     const rHi = cachedRows[hi].getBoundingClientRect()
@@ -107,7 +107,7 @@ export function useSwipeSelect(
     return (clientY - rHi.bottom < rLo.top - clientY) ? hi : lo
   }
 
-  /** Virtual mode: find row index from Y coordinate using virtualizer data */
+  /** Virtual mode: derive the row index from a Y coordinate backed by virtualizer data */
   function findRowIndexAtYVirtual(clientY: number): number {
     const virt = virtualContext!.getVirtualizer()
     if (!virt) return -1
@@ -119,13 +119,13 @@ export function useSwipeSelect(
     const theadHeight = thead ? thead.getBoundingClientRect().height : 0
     const contentY = clientY - scrollRect.top - theadHeight + scrollEl.scrollTop
 
-    // Search in rendered virtualItems first
+    // Scan the already-rendered virtualItems first
     const items = virt.getVirtualItems()
     for (const item of items) {
       if (contentY >= item.start && contentY < item.end) return item.index
     }
 
-    // Outside visible range: estimate
+    // Beyond the visible window — fall back to estimation
     const totalCount = virtualContext!.getSortedData().length
     if (totalCount === 0) return -1
     const est = virt.options.estimateSize(0)
@@ -133,12 +133,12 @@ export function useSwipeSelect(
     return Math.max(0, Math.min(totalCount - 1, guess))
   }
 
-  // --- Prevent text selection via selectstart (no body style mutation) ---
+  // --- Block native text selection through selectstart (avoids mutating body styles) ---
   function onSelectStart(e: Event) { e.preventDefault() }
 
-  // --- Marquee overlay ---
+  // --- Marquee selection overlay ---
   function createMarquee() {
-    removeMarquee() // defensive: remove any stale marquee
+    removeMarquee() // safeguard: clear any leftover marquee element
     marqueeEl = document.createElement('div')
     const isDark = document.documentElement.classList.contains('dark')
     Object.assign(marqueeEl.style, {
@@ -168,7 +168,7 @@ export function useSwipeSelect(
     if (marqueeEl) { marqueeEl.remove(); marqueeEl = null }
   }
 
-  // --- Row selection logic ---
+  // --- Row selection handling ---
   function applyRange(endIndex: number) {
     if (startRowIndex < 0 || endIndex < 0) return
     const rangeMin = Math.min(startRowIndex, endIndex)
@@ -207,7 +207,7 @@ export function useSwipeSelect(
     lastEndIndex = endIndex
   }
 
-  /** Virtual mode: apply selection range using data array instead of DOM */
+  /** Virtual mode: apply the selection range against the data array rather than DOM elements */
   function applyRangeVirtual(endIndex: number) {
     if (startRowIndex < 0 || endIndex < 0) return
     const rangeMin = Math.min(startRowIndex, endIndex)
@@ -245,7 +245,7 @@ export function useSwipeSelect(
     lastEndIndex = endIndex
   }
 
-  // --- Scrollable parent ---
+  // --- Locate the scrollable ancestor ---
   function getScrollParent(el: HTMLElement): HTMLElement {
     let parent = el.parentElement
     while (parent && parent !== document.documentElement) {
@@ -256,8 +256,8 @@ export function useSwipeSelect(
     return document.documentElement
   }
 
-  // --- Scrollbar click detection ---
-  /** Check if click lands on a scrollbar of the target element or any ancestor. */
+  // --- Scrollbar hit testing ---
+  /** Determine whether the click lands on a scrollbar belonging to the target or one of its ancestors. */
   function isOnScrollbar(e: MouseEvent): boolean {
     let el = e.target as HTMLElement | null
     while (el && el !== document.documentElement) {
@@ -265,21 +265,21 @@ export function useSwipeSelect(
       const hasHScroll = el.scrollWidth > el.clientWidth
       if (hasVScroll || hasHScroll) {
         const rect = el.getBoundingClientRect()
-        // clientWidth/clientHeight exclude scrollbar; offsetWidth/offsetHeight include it
+        // clientWidth/clientHeight skip the scrollbar area; offsetWidth/offsetHeight cover it fully
         if (hasVScroll && e.clientX > rect.left + el.clientWidth) return true
         if (hasHScroll && e.clientY > rect.top + el.clientHeight) return true
       }
       el = el.parentElement
     }
-    // Document-level scrollbar
+    // Scrollbar at the document level
     const docEl = document.documentElement
     if (e.clientX >= docEl.clientWidth || e.clientY >= docEl.clientHeight) return true
     return false
   }
 
   /**
-   * If the mousedown starts on inner cell content rather than cell padding,
-   * prefer the browser's native text selection so users can copy text normally.
+   * When the mouse press originates on inner cell content instead of cell padding,
+   * defer to the browser's built-in text selection so that text can still be copied as usual.
    */
   function shouldPreferNativeTextSelection(target: HTMLElement): boolean {
     const row = target.closest('tbody tr[data-row-id]')
@@ -307,7 +307,7 @@ export function useSwipeSelect(
   }
 
   // =============================================
-  // Phase 1: detect drag threshold (5px movement)
+  // Phase 1: detect whether the drag threshold (5px) has been crossed
   // =============================================
   function onMouseDown(e: MouseEvent) {
     if (e.button !== 0) return
@@ -317,7 +317,7 @@ export function useSwipeSelect(
     const activationRoot = getActivationRoot()
     if (!activationRoot || !activationRoot.contains(target)) return
 
-    // Skip clicks on any scrollbar (inner containers + document)
+    // Ignore clicks that land on any scrollbar (inner containers as well as the document)
     if (isOnScrollbar(e)) return
 
     if (target.closest('button, a, input, select, textarea, [role="button"], [role="menuitem"], [role="combobox"], [role="dialog"]')) return
@@ -325,7 +325,7 @@ export function useSwipeSelect(
     if (shouldPreferNativeSelectionOutsideRows(target)) return
 
     if (virtualContext) {
-      // Virtual mode: check data availability instead of DOM rows
+      // Virtual mode: verify data availability rather than inspecting DOM rows
       const data = virtualContext.getSortedData()
       if (data.length === 0) return
     } else {
@@ -334,10 +334,10 @@ export function useSwipeSelect(
     }
 
     pendingStartY = e.clientY
-    // Prevent text selection as soon as the mouse is down,
-    // before the drag threshold is reached (Phase 1).
-    // Without this, the browser starts selecting text during
-    // the 0–5px threshold movement window.
+    // Block native text selection the moment the mouse is pressed,
+    // even before the drag threshold is satisfied (Phase 1).
+    // Otherwise the browser may begin selecting text while the
+    // pointer travels within the 0–5px threshold window.
     document.addEventListener('selectstart', onSelectStart)
     document.addEventListener('mousemove', onThresholdMove)
     document.addEventListener('mouseup', onThresholdUp)
@@ -345,7 +345,7 @@ export function useSwipeSelect(
 
   function onThresholdMove(e: MouseEvent) {
     if (Math.abs(e.clientY - pendingStartY) < DRAG_THRESHOLD) return
-    // Threshold exceeded — begin actual drag
+    // Threshold surpassed — kick off the real drag
     document.removeEventListener('mousemove', onThresholdMove)
     document.removeEventListener('mouseup', onThresholdUp)
 
@@ -355,7 +355,7 @@ export function useSwipeSelect(
       beginDrag(pendingStartY)
     }
 
-    // Process the move that crossed the threshold
+    // Handle the movement event that surpassed the threshold
     lastMouseY = e.clientY
     updateMarquee(e.clientY)
     const findIdx = virtualContext ? findRowIndexAtYVirtual : findRowIndexAtY
@@ -372,13 +372,13 @@ export function useSwipeSelect(
   function onThresholdUp() {
     document.removeEventListener('mousemove', onThresholdMove)
     document.removeEventListener('mouseup', onThresholdUp)
-    // Phase 1 ended without crossing threshold — remove selectstart blocker
+    // Phase 1 ended before the threshold was reached — detach the selectstart blocker
     document.removeEventListener('selectstart', onSelectStart)
     cachedRows = []
   }
 
   // ============================
-  // Phase 2: actual drag session
+  // Phase 2: the drag session itself
   // ============================
   function beginDrag(clientY: number) {
     startRowIndex = findRowIndexAtY(clientY)
@@ -402,13 +402,13 @@ export function useSwipeSelect(
     createMarquee()
     updateMarquee(clientY)
     applyRange(startRowIndex)
-    // selectstart is already blocked since Phase 1 (onMouseDown).
-    // Clear any text selection that the browser may have started
-    // before our selectstart handler took effect.
+    // selectstart has been blocked since Phase 1 (onMouseDown).
+    // Wipe any text selection the browser may have initiated
+    // before the selectstart handler became active.
     window.getSelection()?.removeAllRanges()
   }
 
-  /** Virtual mode: begin drag using data array */
+  /** Virtual mode: kick off the drag using the data array */
   function beginDragVirtual(clientY: number) {
     startRowIndex = findRowIndexAtYVirtual(clientY)
     const data = virtualContext!.getSortedData()
@@ -417,7 +417,7 @@ export function useSwipeSelect(
       : null
     dragMode = (startRowId !== null && adapter.isSelected(startRowId)) ? 'deselect' : 'select'
 
-    // Build full snapshot from all data rows
+    // Construct a complete snapshot covering every data row
     initialSelectedSnapshot = new Map()
     for (let i = 0; i < data.length; i++) {
       const id = virtualContext!.getRowId(data[i], i)
@@ -429,7 +429,7 @@ export function useSwipeSelect(
     lastMouseY = clientY
     lastEndIndex = -1
 
-    // In virtual mode, scroll parent is the virtualizer's scroll element
+    // In virtual mode the scroll parent is the virtualizer's own scroll element
     const virt = virtualContext!.getVirtualizer()
     cachedScrollParent = virt?.scrollElement ?? (containerRef.value ? getScrollParent(containerRef.value) : null)
 
@@ -459,9 +459,9 @@ export function useSwipeSelect(
     if (!isDragging.value) return
     const findIdx = virtualContext ? findRowIndexAtYVirtual : findRowIndexAtY
     const apply = virtualContext ? applyRangeVirtual : applyRange
-    // After wheel scroll, rows shift in viewport — re-check selection
+    // After wheel scrolling the visible rows shift — re-evaluate the selection
     requestAnimationFrame(() => {
-      if (!isDragging.value) return // guard: drag may have ended before this frame
+      if (!isDragging.value) return // safeguard: the drag might have finished before this frame fired
       const rowIdx = findIdx(lastMouseY)
       if (rowIdx >= 0) apply(rowIdx)
     })
@@ -487,16 +487,16 @@ export function useSwipeSelect(
     cleanupDrag()
   }
 
-  // Guard: clean up if mouse leaves window or window loses focus during drag
+  // Guard: tear everything down when the mouse leaves the window or the window loses focus mid-drag
   function onWindowBlur() {
     if (isDragging.value) cleanupDrag()
-    // Also clean up threshold phase (Phase 1)
+    // Also tear down the threshold phase (Phase 1)
     document.removeEventListener('mousemove', onThresholdMove)
     document.removeEventListener('mouseup', onThresholdUp)
     document.removeEventListener('selectstart', onSelectStart)
   }
 
-  // --- Auto-scroll logic ---
+  // --- Automatic scrolling engine ---
   let scrollRAF = 0
 
   function autoScroll(e: MouseEvent) {
@@ -520,7 +520,7 @@ export function useSwipeSelect(
       const step = () => {
         const prevScrollTop = scrollEl.scrollTop
         scrollEl.scrollTop += dy
-        // Only re-check selection if scroll actually moved
+        // Re-evaluate the selection only when the scroll position truly changed
         if (scrollEl.scrollTop !== prevScrollTop) {
           const rowIdx = findIdx(lastMouseY)
           if (rowIdx >= 0 && rowIdx !== lastEndIndex) apply(rowIdx)
@@ -535,7 +535,7 @@ export function useSwipeSelect(
     cancelAnimationFrame(scrollRAF)
   }
 
-  // --- Lifecycle ---
+  // --- Component lifecycle hooks ---
   onMounted(() => {
     document.addEventListener('mousedown', onMouseDown)
     window.addEventListener('blur', onWindowBlur)
@@ -544,7 +544,7 @@ export function useSwipeSelect(
   onUnmounted(() => {
     document.removeEventListener('mousedown', onMouseDown)
     window.removeEventListener('blur', onWindowBlur)
-    // Clean up any in-progress drag state
+    // Tear down any drag state that is still in progress
     document.removeEventListener('mousemove', onThresholdMove)
     document.removeEventListener('mouseup', onThresholdUp)
     document.removeEventListener('selectstart', onSelectStart)

@@ -65,8 +65,8 @@ const disabledHint = computed(() => {
       return t('auth.oauthFlow.wechatBrowserOnly')
     case 'native_app_required':
       return localizeWeChatHint(
-        '当前仅配置微信移动应用登录，需要在原生 App 中通过微信 SDK 发起授权。',
-        'This site only has WeChat mobile app login configured. Continue from the native app through the WeChat SDK.',
+        '目前仅启用了微信移动端应用登录，请前往原生 App 使用微信 SDK 完成授权。',
+        'Only WeChat mobile app login is available. Please authorize from within the native app via the WeChat SDK.',
       )
     case 'not_configured':
       return t('auth.oauthFlow.wechatNotConfigured')

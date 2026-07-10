@@ -6,7 +6,7 @@
         <button
           @click="toggleMobileSidebar"
           class="btn-ghost btn-icon lg:hidden"
-          aria-label="Toggle Menu"
+          aria-label="Menu Toggle"
         >
           <Icon name="menu" size="md" />
         </button>
@@ -96,7 +96,7 @@
           <button
             @click="toggleDropdown"
             class="flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
-            aria-label="User Menu"
+            aria-label="Account Menu"
           >
             <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-sm font-medium text-white shadow-sm">
               <img
@@ -268,9 +268,9 @@ const avatarUrl = computed(() => user.value?.avatar_url?.trim() || '')
 const availableBalance = computed(() => Number(user.value?.balance || 0))
 const frozenBalance = computed(() => Number(user.value?.frozen_balance || 0))
 const totalBalance = computed(() => availableBalance.value + frozenBalance.value)
-const balanceAvailableText = computed(() => t('common.availableBalance') === 'common.availableBalance' ? '可用余额' : t('common.availableBalance'))
-const balanceFrozenText = computed(() => t('common.frozenBalance') === 'common.frozenBalance' ? '冻结金额' : t('common.frozenBalance'))
-const balanceTotalText = computed(() => t('common.totalBalance') === 'common.totalBalance' ? '总余额' : t('common.totalBalance'))
+const balanceAvailableText = computed(() => t('common.availableBalance') === 'common.availableBalance' ? '当前可用' : t('common.availableBalance'))
+const balanceFrozenText = computed(() => t('common.frozenBalance') === 'common.frozenBalance' ? '已冻结' : t('common.frozenBalance'))
+const balanceTotalText = computed(() => t('common.totalBalance') === 'common.totalBalance' ? '账户合计' : t('common.totalBalance'))
 const balanceFrozenLabel = computed(() => `${balanceFrozenText.value} ${formatHeaderMoney(frozenBalance.value)}`)
 
 // 只在标准模式的管理员下显示新手引导按钮

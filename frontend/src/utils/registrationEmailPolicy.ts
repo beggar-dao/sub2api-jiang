@@ -7,8 +7,8 @@ const EMAIL_SUFFIX_MESSAGE_VISIBLE_LIMIT = 5
 const EMAIL_SUFFIX_DOMAIN_PATTERN =
   /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/
 
-// normalizeRegistrationEmailSuffixDomain converts raw input into a canonical domain token.
-// Exact domains are returned without "@"; wildcard domains keep the "*." prefix.
+// normalizeRegistrationEmailSuffixDomain transforms raw input into a canonical domain token.
+// Exact domains come back without "@"; wildcard domains retain the "*." prefix.
 export function normalizeRegistrationEmailSuffixDomain(raw: string): string {
   let value = String(raw || '').trim().toLowerCase()
   if (!value) {
@@ -121,7 +121,7 @@ export function formatRegistrationEmailSuffixWhitelistForMessage(
   return visible.join(options.separator)
 }
 
-// Pasted domains should be strict: any invalid character drops the whole token.
+// Pasted domains are treated strictly: any invalid character discards the entire token.
 function normalizeRegistrationEmailSuffixDomainStrict(raw: string): string {
   let value = String(raw || '').trim().toLowerCase()
   if (!value) {

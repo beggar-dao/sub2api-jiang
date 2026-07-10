@@ -18,7 +18,7 @@ export interface OpenAITokenInfo {
   plan_type?: string
   subscription_expires_at?: string
   privacy_mode?: string
-  // OpenAI specific IDs (extracted from ID Token)
+  // OpenAI-specific IDs (parsed from the ID Token)
   chatgpt_account_id?: string
   chatgpt_user_id?: string
   organization_id?: string
@@ -32,14 +32,14 @@ export function useOpenAIOAuth() {
   const { t } = useI18n()
   const endpointPrefix = '/admin/openai'
 
-  // State
+  // Reactive state
   const authUrl = ref('')
   const sessionId = ref('')
   const oauthState = ref('')
   const loading = ref(false)
   const error = ref('')
 
-  // Reset state
+  // Reset all reactive state
   const resetState = () => {
     authUrl.value = ''
     sessionId.value = ''
@@ -48,7 +48,7 @@ export function useOpenAIOAuth() {
     error.value = ''
   }
 
-  // Generate auth URL for OpenAI OAuth
+  // Generate the auth URL for OpenAI OAuth
   const generateAuthUrl = async (
     proxyId?: number | null,
     redirectUri?: string
@@ -90,7 +90,7 @@ export function useOpenAIOAuth() {
     }
   }
 
-  // Exchange auth code for tokens
+  // Swap the auth code for access tokens
   const exchangeAuthCode = async (
     code: string,
     currentSessionId: string,
@@ -131,8 +131,8 @@ export function useOpenAIOAuth() {
     }
   }
 
-  // Validate refresh token and get full token info
-  // clientId: 指定 OAuth client_id（用于第三方渠道获取的 RT，如 app_LlGpXReQgckcGGUo2JrYvtJK）
+  // Validate a refresh token and retrieve the full token info
+  // clientId: designates the OAuth client_id (used for refresh tokens obtained via third-party channels, e.g. app_LlGpXReQgckcGGUo2JrYvtJK)
   const validateRefreshToken = async (
     refreshToken: string,
     proxyId?: number | null,
@@ -147,7 +147,7 @@ export function useOpenAIOAuth() {
     error.value = ''
 
     try {
-      // Use dedicated refresh-token endpoint
+      // Talk to the dedicated refresh-token endpoint
       const tokenInfo = await adminAPI.accounts.refreshOpenAIToken(
         refreshToken.trim(),
         proxyId,
@@ -169,14 +169,14 @@ export function useOpenAIOAuth() {
     }
   }
 
-  // Build credentials for OpenAI OAuth account (aligned with backend BuildAccountCredentials)
+  // Build the credentials payload for an OpenAI OAuth account (mirrors the backend BuildAccountCredentials)
   const buildCredentials = (tokenInfo: OpenAITokenInfo): Record<string, unknown> => {
     const creds: Record<string, unknown> = {
       access_token: tokenInfo.access_token,
       expires_at: tokenInfo.expires_at
     }
 
-    // 仅在返回了新的 refresh_token 时才写入，防止用空值覆盖已有令牌
+    // 仅当接口返回了新的 refresh_token 时才写入，避免以空值覆盖既有令牌
     if (tokenInfo.refresh_token) {
       creds.refresh_token = tokenInfo.refresh_token
     }
@@ -208,7 +208,7 @@ export function useOpenAIOAuth() {
     return creds
   }
 
-  // Build extra info from token response
+  // Build the extra-info payload from the token response
   const buildExtraInfo = (tokenInfo: OpenAITokenInfo): Record<string, string> | undefined => {
     const extra: Record<string, string> = {}
     if (tokenInfo.email) {
@@ -224,13 +224,13 @@ export function useOpenAIOAuth() {
   }
 
   return {
-    // State
+    // Reactive state
     authUrl,
     sessionId,
     oauthState,
     loading,
     error,
-    // Methods
+    // Exposed methods
     resetState,
     generateAuthUrl,
     exchangeAuthCode,

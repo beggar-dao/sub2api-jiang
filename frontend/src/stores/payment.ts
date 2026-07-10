@@ -1,6 +1,6 @@
 /**
  * Payment Store
- * Manages payment configuration, current order state, and subscription plans
+ * Handles payment config, in-progress order tracking, and subscription plan data
  */
 
 import { defineStore } from 'pinia'
@@ -11,11 +11,11 @@ import type { PaymentConfig, PaymentOrder, SubscriptionPlan, CreateOrderRequest 
 export const usePaymentStore = defineStore('payment', () => {
   // ==================== State ====================
 
-  /** Payment configuration from backend */
+  /** Payment config retrieved from the backend */
   const config = ref<PaymentConfig | null>(null)
-  /** Currently active order (for payment flow) */
+  /** The order currently being processed in the payment flow */
   const currentOrder = ref<PaymentOrder | null>(null)
-  /** Available subscription plans */
+  /** Subscription plans available for selection */
   const plans = ref<SubscriptionPlan[]>([])
 
   const configLoading = ref(false)
@@ -23,7 +23,7 @@ export const usePaymentStore = defineStore('payment', () => {
 
   // ==================== Actions ====================
 
-  /** Fetch payment configuration */
+  /** Retrieve payment configuration */
   async function fetchConfig(force = false): Promise<PaymentConfig | null> {
     if (configLoaded.value && !force) return config.value
     if (configLoading.value) return config.value
@@ -42,11 +42,11 @@ export const usePaymentStore = defineStore('payment', () => {
     }
   }
 
-  /** Fetch available subscription plans */
+  /** Retrieve the list of available subscription plans */
   async function fetchPlans(): Promise<SubscriptionPlan[]> {
     try {
       const response = await paymentAPI.getPlans()
-      // Backend returns features as newline-separated string; parse to array
+      // Backend delivers features as a newline-delimited string; convert into an array
       plans.value = (response.data || []).map((p: Omit<SubscriptionPlan, 'features'> & { features: string | string[] }) => ({
         ...p,
         features: typeof p.features === 'string'
@@ -60,13 +60,13 @@ export const usePaymentStore = defineStore('payment', () => {
     }
   }
 
-  /** Create a new order and set it as current */
+  /** Build a new order and mark it as the active one */
   async function createOrder(params: CreateOrderRequest) {
     const response = await paymentAPI.createOrder(params)
     return response.data
   }
 
-  /** Poll order status by ID (read-only, no upstream check) */
+  /** Query order status by ID (read-only, no server-side validation) */
   async function pollOrderStatus(orderId: number): Promise<PaymentOrder | null> {
     try {
       const response = await paymentAPI.getOrder(orderId)
@@ -81,7 +81,7 @@ export const usePaymentStore = defineStore('payment', () => {
     }
   }
 
-  /** Clear current order state */
+  /** Reset the active order back to null */
   function clearCurrentOrder() {
     currentOrder.value = null
   }
