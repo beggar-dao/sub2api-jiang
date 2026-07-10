@@ -1,8 +1,8 @@
 /**
- * 验证并规范化 URL
- * 默认只接受绝对 URL（以 http:// 或 https:// 开头），可按需允许相对路径
+ * 校验并规范化 URL
+ * 默认仅接收绝对 URL（以 http:// 或 https:// 打头），可按需放行相对路径
  * @param value 用户输入的 URL
- * @returns 规范化后的 URL，如果无效则返回空字符串
+ * @returns 规范化后的 URL，若无效则返回空字符串
  */
 type SanitizeOptions = {
   allowRelative?: boolean
@@ -19,13 +19,13 @@ export function sanitizeUrl(value: string, options: SanitizeOptions = {}): strin
     return trimmed
   }
 
-  // 允许 data:image/ 开头的 data URL（仅限图片类型）
+  // 放行 data:image/ 打头的 data URL（仅限图片类型）
   if (options.allowDataUrl && trimmed.startsWith('data:image/')) {
     return trimmed
   }
 
-  // 只接受绝对 URL，不使用 base URL 来避免相对路径被解析为当前域名
-  // 检查是否以 http:// 或 https:// 开头
+  // 仅接收绝对 URL，不使用 base URL 来避免相对路径被解析为当前域名
+  // 检查是否以 http:// 或 https:// 打头
   if (!trimmed.match(/^https?:\/\//i)) {
     return ''
   }

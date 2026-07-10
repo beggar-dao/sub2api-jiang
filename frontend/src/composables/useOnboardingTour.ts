@@ -15,22 +15,22 @@ export function useOnboardingTour(options: OnboardingOptions) {
   const { t } = useI18n()
   const userStore = useUserStore()
   const onboardingStore = useOnboardingStore()
-  const storageVersion = 'v4_interactive' // Bump version for new tour type
+  const storageVersion = 'v4_interactive' // Increment the version whenever the tour type changes
 
-  // Timing constants for better maintainability
+  // Timing constants for easier maintenance
   const TIMING = {
-    INTERACTIVE_WAIT_MS: 800,        // Default wait time for interactive steps
-    ELEMENT_TIMEOUT_MS: 8000,        // Timeout for element detection
-    AUTO_START_DELAY_MS: 1000        // Delay before auto-starting tour
+    INTERACTIVE_WAIT_MS: 800,        // Default delay applied to interactive steps
+    ELEMENT_TIMEOUT_MS: 8000,        // Timeout window for element detection
+    AUTO_START_DELAY_MS: 1000        // Delay before the tour auto-starts
   } as const
 
-  // Helper: Check if a step is interactive (only close button shown)
+  // Helper: determine whether a step is interactive (only the close button is visible)
   const isInteractiveStep = (step: DriveStep): boolean => {
     return step.popover?.showButtons?.length === 1 &&
            step.popover.showButtons[0] === 'close'
   }
 
-  // Helper: Clean up click listener
+  // Helper: tear down the click listener
   const cleanupClickListener = () => {
     if (!currentClickListener) return
     const { element: el, handler, keyHandler, originalTabIndex, eventTypes } = currentClickListener
@@ -45,14 +45,14 @@ export function useOnboardingTour(options: OnboardingOptions) {
     currentClickListener = null
   }
 
-  // 使用 store 管理的全局 driver 实例
+  // 全局 driver 实例，由 store 统一管理
   let driverInstance: Driver | null = onboardingStore.getDriverInstance()
   let currentClickListener: {
     element: HTMLElement
     handler: () => void
     keyHandler?: (e: KeyboardEvent) => void
     originalTabIndex?: string | null
-    eventTypes?: string[] // Track which event types were added
+    eventTypes?: string[] // Records which event types were attached
   } | null = null
   let autoStartTimer: ReturnType<typeof setTimeout> | null = null
   let globalKeyboardHandler: ((e: KeyboardEvent) => void) | null = null
@@ -77,7 +77,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
   }
 
   /**
-   * 检查元素是否存在，如果不存在则重试
+   * 校验元素是否存在，若不存在则进行重试
    */
   const ensureElement = async (selector: string, timeout = 5000): Promise<boolean> => {
     const startTime = Date.now()
@@ -92,15 +92,15 @@ export function useOnboardingTour(options: OnboardingOptions) {
   }
 
   const startTour = async (startIndex = 0) => {
-    // 动态获取当前用户角色和步骤
+    // 动态读取当前用户角色及对应步骤
     const isAdmin = userStore.user?.role === 'admin'
     const isSimpleMode = userStore.isSimpleMode
     const steps = isAdmin ? getAdminSteps(t, isSimpleMode) : getUserSteps(t)
 
-    // 确保 DOM 就绪
+    // 保证 DOM 已准备就绪
     await nextTick()
 
-    // 如果指定了起始步骤，确保元素可见
+    // 当指定了起始步骤时，保证对应元素可见
     const currentStep = steps[startIndex]
     if (currentStep?.element && typeof currentStep.element === 'string') {
       await ensureElement(currentStep.element, TIMING.ELEMENT_TIMEOUT_MS)
@@ -110,27 +110,27 @@ export function useOnboardingTour(options: OnboardingOptions) {
       driverInstance.destroy()
     }
 
-    // 创建新的 driver 实例并存储到 store
+    // 构建新的 driver 实例并存入 store
     driverInstance = driver({
       showProgress: true,
       steps,
       animate: true,
-      allowClose: false, // 禁止点击遮罩关闭
+      allowClose: false, // 禁止通过点击遮罩层关闭引导
       stagePadding: 4,
       popoverClass: 'theme-tour-popover',
       nextBtnText: t('common.next'),
       prevBtnText: t('common.back'),
       doneBtnText: t('common.confirm'),
 
-      // 导航处理
+      // 导航行为处理
       onNextClick: async (_el, _step, { config, state }) => {
-        // 如果是最后一步，点击则是"完成"
+        // 当处于最后一步时，点击即代表"完成"
         if (state.activeIndex === (config.steps?.length ?? 0) - 1) {
           markAsSeen()
           driverInstance?.destroy()
           onboardingStore.setDriverInstance(null)
         } else {
-          // 注意：交互式步骤通常隐藏 Next 按钮，此处逻辑为防御性编程
+          // 注意：交互式步骤一般会隐藏"下一步"按钮，此处的逻辑属于防御性编码
           const currentIndex = state.activeIndex ?? 0
           const currentStep = steps[currentIndex]
 
@@ -159,9 +159,9 @@ export function useOnboardingTour(options: OnboardingOptions) {
         onboardingStore.setDriverInstance(null)
       },
 
-      // 渲染时重组 Footer 布局
+      // 在渲染阶段重新编排底部栏布局
       onPopoverRender: (popover, { config, state }) => {
-        // Class name constants for easier maintenance
+        // Class-name constants grouped for easier upkeep
         const CLASS_REORGANIZED = 'reorganized'
         const CLASS_FOOTER_LEFT = 'footer-left'
         const CLASS_FOOTER_RIGHT = 'footer-right'
@@ -173,13 +173,13 @@ export function useOnboardingTour(options: OnboardingOptions) {
         try {
           const { title: titleEl, footer: footerEl, nextButton, previousButton } = popover
 
-          // Defensive check: ensure popover elements exist
+          // Defensive check: verify popover elements are present
           if (!titleEl || !footerEl) {
             console.warn('Onboarding: Missing popover elements')
             return
           }
 
-          // 1.5 交互式步骤提示
+          // 1.5 Interactive-step hint
           const currentStep = steps[state.activeIndex ?? 0]
 
           if (currentStep && isInteractiveStep(currentStep) && popover.description) {
@@ -201,7 +201,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
             }
           }
 
-          // 2. 底部：DOM 重组
+          // 2. Footer: DOM restructuring
           if (!footerEl.classList.contains(CLASS_REORGANIZED)) {
             footerEl.classList.add(CLASS_REORGANIZED)
 
@@ -253,7 +253,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
             footerEl.appendChild(rightContainer)
           }
 
-          // 3. 状态更新
+          // 3. State refresh
           const isLastStep = state.activeIndex === (config.steps?.length ?? 0) - 1
           const activeNextBtn = nextButton || footerEl.querySelector(`.${CLASS_NEXT_BTN}`)
 
@@ -269,12 +269,12 @@ export function useOnboardingTour(options: OnboardingOptions) {
         }
       },
 
-      // 步骤高亮时触发
+      // 当步骤进入高亮状态时触发
       onHighlightStarted: async (element, step) => {
-        // 清理之前的监听器
+        // 清除上一次绑定的监听器
         cleanupClickListener()
 
-        // 尝试等待元素
+        // 尝试等候元素出现
         if (!element && step.element && typeof step.element === 'string') {
            const exists = await ensureElement(step.element, 8000)
            if (!exists) {
@@ -287,13 +287,13 @@ export function useOnboardingTour(options: OnboardingOptions) {
         if (isInteractiveStep(step) && element) {
           const htmlElement = element as HTMLElement
 
-          // Check if this is a submit button - if so, don't bind auto-advance listeners
-          // Let business code (e.g., handleCreateGroup) manually call nextStep after success
+          // Check whether this is a submit button — when it is, skip binding auto-advance listeners
+          // and let business code (e.g., handleCreateGroup) invoke nextStep manually after a successful submission
           const isSubmitButton = htmlElement.getAttribute('type') === 'submit' ||
                                 (htmlElement.tagName === 'BUTTON' && htmlElement.closest('form'))
 
           if (isSubmitButton) {
-            return // Don't bind any click listeners for submit buttons
+            return // Skip binding click listeners on submit buttons entirely
           }
 
           const originalTabIndex = htmlElement.getAttribute('tabindex')
@@ -301,39 +301,39 @@ export function useOnboardingTour(options: OnboardingOptions) {
              htmlElement.setAttribute('tabindex', '0')
           }
 
-          // Enhanced Select component detection - check both children and self
+          // Enhanced Select-component detection — inspect both descendants and the element itself
           const isSelectComponent = htmlElement.querySelector('.select-trigger') !== null ||
                                     htmlElement.classList.contains('select-trigger')
 
-          // Select dropdowns are teleported to <body>, so click events on options
-          // won't bubble through this element. Skip auto-advance for Select components.
-          // Users navigate using Next/Previous buttons after making their selection.
+          // Select dropdowns are teleported to <body>, therefore click events fired on options
+          // do not bubble through this element. Auto-advance is skipped for Select components;
+          // users proceed via the Next/Previous buttons once they have picked a value.
           if (isSelectComponent) {
             return
           }
 
-          // Single-execution protection flag
+          // Guard flag ensuring single execution
           let hasExecuted = false
 
-          // Capture the step index when binding the handler
+          // Snapshot the step index at the time the handler is bound
           const boundStepIndex = driverInstance?.getActiveIndex() ?? 0
 
           const clickHandler = async () => {
-            // Prevent duplicate execution
+            // Guard against duplicate execution
             if (hasExecuted) {
               return
             }
             hasExecuted = true
 
-            // Wait before advancing to allow user to see the result of their action
+            // Pause briefly before advancing so the user can perceive the outcome of their action
             await new Promise(resolve => setTimeout(resolve, TIMING.INTERACTIVE_WAIT_MS))
 
-            // Verify driver is still active and not destroyed
+            // Confirm the driver is still active and has not been destroyed
             if (!driverInstance || !driverInstance.isActive()) {
               return
             }
 
-            // Check if we're still on the same step - abort if step changed during wait
+            // Verify we are still on the same step — bail out if the step shifted during the wait
             const currentIndex = driverInstance.getActiveIndex() ?? 0
             if (currentIndex !== boundStepIndex) {
               return
@@ -349,18 +349,18 @@ export function useOnboardingTour(options: OnboardingOptions) {
               }
             }
 
-            // Final check before moving
+            // One last check before advancing
             if (driverInstance && driverInstance.isActive()) {
               driverInstance.moveNext()
             }
           }
 
-          // For input fields, advance on input/change events instead of click
+          // For input fields, advance upon input/change events rather than click
           const isInputField = ['INPUT', 'TEXTAREA', 'SELECT'].includes(htmlElement.tagName)
 
           if (isInputField) {
             const inputHandler = () => {
-              // Remove listener after first input
+              // Detach the listener once the first input arrives
               htmlElement.removeEventListener('input', inputHandler)
               htmlElement.removeEventListener('change', inputHandler)
               clickHandler()
@@ -399,7 +399,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
 
       onDestroyed: () => {
         cleanupClickListener()
-        // 清理全局监听器 (由此处唯一管理)
+        // 清除全局监听器（由本处统一管理）
         if (globalKeyboardHandler) {
           document.removeEventListener('keydown', globalKeyboardHandler, { capture: true })
           globalKeyboardHandler = null
@@ -410,7 +410,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
 
     onboardingStore.setDriverInstance(driverInstance)
 
-    // 添加全局键盘监听器
+    // 注册全局键盘监听器
     globalKeyboardHandler = (e: KeyboardEvent) => {
       if (!driverInstance?.isActive()) return
 
@@ -425,7 +425,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
 
       if (e.key === 'ArrowRight') {
         const target = e.target as HTMLElement
-        // 允许在输入框中使用方向键
+        // 允许输入框内使用方向键
         if (['INPUT', 'TEXTAREA'].includes(target?.tagName)) {
            return
         }
@@ -433,7 +433,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
         e.preventDefault()
         e.stopPropagation()
 
-        // 对于交互式步骤，箭头键应该触发交互而非跳过
+        // 在交互式步骤中，方向键应触发交互操作而非直接跳过
         const currentIndex = driverInstance!.getActiveIndex() ?? 0
         const currentStep = steps[currentIndex]
 
@@ -443,21 +443,21 @@ export function useOnboardingTour(options: OnboardingOptions) {
             : currentStep.element as HTMLElement
 
           if (targetElement) {
-            // 对于非输入类元素，提示用户需要点击或按Enter
+            // 非输入类型的元素需提示用户点击或按下回车键
             const isClickable = !['INPUT', 'TEXTAREA', 'SELECT'].includes(targetElement.tagName)
             if (isClickable) {
-              // 不自动触发，只是停留提示
+              // 不自动触发操作，仅作停留提示
               return
             }
           }
         }
 
-        // 非交互式步骤才允许箭头键翻页
+        // 非交互式步骤方可通过方向键翻页
         driverInstance!.moveNext()
       }
       else if (e.key === 'Enter') {
         const target = e.target as HTMLElement
-        // 允许在输入框中使用回车
+        // 允许输入框内使用回车键
         if (['INPUT', 'TEXTAREA'].includes(target?.tagName)) {
            return
         }
@@ -465,7 +465,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
         e.preventDefault()
         e.stopPropagation()
 
-        // 回车键处理交互式步骤
+        // 回车键用于推进交互式步骤
         const currentIndex = driverInstance!.getActiveIndex() ?? 0
         const currentStep = steps[currentIndex]
 
@@ -486,7 +486,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
       }
       else if (e.key === 'ArrowLeft') {
         const target = e.target as HTMLElement
-        // 允许在输入框中使用方向键
+        // 允许输入框及可编辑区域内使用方向键
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target?.tagName) || target?.isContentEditable) {
            return
         }
@@ -531,12 +531,12 @@ export function useOnboardingTour(options: OnboardingOptions) {
       return
     }
 
-    // 简易模式下禁用新手引导
+    // 简易模式下关闭新手引导功能
     if (userStore.isSimpleMode) {
       return
     }
 
-    // 只在管理员+标准模式下自动启动
+    // 仅在管理员并处于标准模式时才会自动启动
     const isAdmin = userStore.user?.role === 'admin'
     if (!isAdmin) {
       return
@@ -553,7 +553,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
       clearTimeout(autoStartTimer)
       autoStartTimer = null
     }
-    // 关键修复：不再此处清理 globalKeyboardHandler，交由 driver.onDestroyed 管理
+    // 关键修复：此处不再负责清除 globalKeyboardHandler，该清理交由 driver.onDestroyed 统一完成
     onboardingStore.clearControlMethods()
   })
 

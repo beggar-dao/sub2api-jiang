@@ -1,12 +1,12 @@
 /**
  * 格式化工具函数
- * 参考 CRS 项目的 format.js 实现
+ * 借鉴 CRS 项目的 format.js 实现
  */
 
 import { i18n, getLocale } from '@/i18n'
 
 /**
- * 格式化相对时间
+ * 排版相对时间
  * @param date 日期字符串或 Date 对象
  * @returns 相对时间字符串，如 "5m ago", "2h ago", "3d ago"
  */
@@ -17,7 +17,7 @@ export function formatRelativeTime(date: string | Date | null | undefined): stri
   const past = new Date(date)
   const diffMs = now.getTime() - past.getTime()
 
-  // 处理未来时间或无效日期
+  // 处理未来时间或非法日期
   if (diffMs < 0 || isNaN(diffMs)) return i18n.global.t('common.time.never')
 
   const diffSecs = Math.floor(diffMs / 1000)
@@ -32,9 +32,9 @@ export function formatRelativeTime(date: string | Date | null | undefined): stri
 }
 
 /**
- * 格式化数字（支持 K/M/B 单位）
+ * 排版数字（支持 K/M/B 单位）
  * @param num 数字
- * @returns 格式化后的字符串，如 "1.2K", "3.5M"
+ * @returns 排版后的字符串，如 "1.2K", "3.5M"
  */
 export function formatNumber(num: number | null | undefined): string {
   if (num === null || num === undefined) return '0'
@@ -42,7 +42,7 @@ export function formatNumber(num: number | null | undefined): string {
   const locale = getLocale()
   const absNum = Math.abs(num)
 
-  // Use Intl.NumberFormat for compact notation if supported and needed
+  // Use Intl.NumberFormat for compact notation when supported and needed
   // Note: Compact notation in 'zh' uses '万/亿', which is appropriate for Chinese
   const formatter = new Intl.NumberFormat(locale, {
     notation: absNum >= 10000 ? 'compact' : 'standard',
@@ -53,17 +53,17 @@ export function formatNumber(num: number | null | undefined): string {
 }
 
 /**
- * 格式化货币金额
+ * 排版货币金额
  * @param amount 金额
  * @param currency 货币代码，默认 USD
- * @returns 格式化后的字符串，如 "$1.25"
+ * @returns 排版后的字符串，如 "$1.25"
  */
 export function formatCurrency(amount: number | null | undefined, currency: string = 'USD'): string {
   if (amount === null || amount === undefined) return '$0.00'
 
   const locale = getLocale()
 
-  // For very small amounts, show more decimals
+  // For very small amounts, display more decimals
   const fractionDigits = amount > 0 && amount < 0.01 ? 6 : 2
 
   return new Intl.NumberFormat(locale, {
@@ -75,10 +75,10 @@ export function formatCurrency(amount: number | null | undefined, currency: stri
 }
 
 /**
- * 格式化字节大小
+ * 排版字节大小
  * @param bytes 字节数
  * @param decimals 小数位数
- * @returns 格式化后的字符串，如 "1.5 MB"
+ * @returns 排版后的字符串，如 "1.5 MB"
  */
 export function formatBytes(bytes: number, decimals: number = 2): string {
   if (bytes === 0) return '0 Bytes'
@@ -93,11 +93,11 @@ export function formatBytes(bytes: number, decimals: number = 2): string {
 }
 
 /**
- * 格式化日期
+ * 排版日期
  * @param date 日期字符串或 Date 对象
  * @param options Intl.DateTimeFormatOptions
  * @param localeOverride 可选 locale 覆盖
- * @returns 格式化后的日期字符串
+ * @returns 排版后的日期字符串
  */
 export function formatDate(
   date: string | Date | null | undefined,
@@ -122,9 +122,9 @@ export function formatDate(
 }
 
 /**
- * 格式化日期（只显示日期部分）
+ * 排版日期（仅展示日期部分）
  * @param date 日期字符串或 Date 对象
- * @returns 格式化后的日期字符串
+ * @returns 排版后的日期字符串
  */
 export function formatDateOnly(date: string | Date | null | undefined): string {
   return formatDate(date, {
@@ -135,11 +135,11 @@ export function formatDateOnly(date: string | Date | null | undefined): string {
 }
 
 /**
- * 格式化日期时间（完整格式）
+ * 排版日期时间（完整格式）
  * @param date 日期字符串或 Date 对象
  * @param options Intl.DateTimeFormatOptions
  * @param localeOverride 可选 locale 覆盖
- * @returns 格式化后的日期时间字符串
+ * @returns 排版后的日期时间字符串
  */
 export function formatDateTime(
   date: string | Date | null | undefined,

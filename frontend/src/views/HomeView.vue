@@ -369,6 +369,61 @@
             >
           </div>
         </div>
+
+        <!-- Showcase Cards -->
+        <section class="mb-16">
+          <div class="mb-8 text-center">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">AI新闻</h2>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2">
+            <!-- 卡片 A: 1 图 + 文案 -->
+            <div
+              class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
+            >
+              <div
+                class="mb-4 flex h-48 items-center justify-center rounded-xl bg-gray-50 dark:bg-dark-900/50"
+              >
+                <img
+                  :src="cardAImg"
+                  alt="展示图A"
+                  class="h-full w-full object-contain p-2"
+                />
+              </div>
+              <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
+                wolong带公司50人参加7月17日，找下游全球需要Token渠道，人人皆是销售员，人人皆是零售站老板，人人发展自己的零售站客户
+              </p>
+            </div>
+
+            <!-- 卡片 B: 2 图 + 文案 -->
+            <div
+              class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
+            >
+              <div class="mb-4 grid h-48 grid-cols-2 gap-3">
+                <div
+                  class="flex items-center justify-center rounded-xl bg-gray-50 dark:bg-dark-900/50"
+                >
+                  <img
+                    :src="cardBImg1"
+                    alt="展示图B1"
+                    class="h-full w-full object-contain p-2"
+                  />
+                </div>
+                <div
+                  class="flex items-center justify-center rounded-xl bg-gray-50 dark:bg-dark-900/50"
+                >
+                  <img
+                    :src="cardBImg2"
+                    alt="展示图B2"
+                    class="h-full w-full object-contain p-2"
+                  />
+                </div>
+              </div>
+              <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
+                热烈欢迎上海张江公安领导顶级大模型行业词元专家团队再次莅临指导
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
 
@@ -411,6 +466,9 @@ import { useAuthStore, useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { sanitizeUrl } from '@/utils/url'
+import cardAImg from '@/assets/icons/48661783663242_.pic_hd.jpg'
+import cardBImg1 from '@/assets/icons/48671783663257_.pic_hd.jpg'
+import cardBImg2 from '@/assets/icons/48691783663309_.pic_hd.jpg'
 
 const { t } = useI18n()
 

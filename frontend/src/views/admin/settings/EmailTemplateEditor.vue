@@ -113,7 +113,7 @@
                   : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
               "
             >
-              {{ selectedEventMeta.optional ? localText("可退订通知", "Optional") : localText("事务邮件", "Transactional") }}
+              {{ selectedEventMeta.optional ? localText("可退订通知", "Optional") : localText("事务性邮件", "Transactional") }}
             </span>
           </div>
           <p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300">
@@ -319,126 +319,126 @@ function localText(zh: string, en: string): string {
 const eventDisplayMeta: Record<string, EventDisplayMeta> = {
   "auth.verify_code": {
     label: "邮箱验证码",
-    timing: "注册、绑定邮箱、OAuth 补全邮箱或 TOTP 邮箱校验时发送。",
-    categoryLabel: "认证安全",
+    timing: "用于注册流程、邮箱绑定、OAuth 邮箱补全，以及 TOTP 邮箱验证场景。",
+    categoryLabel: "账户安全",
   },
   "auth.password_reset": {
-    label: "密码重置",
-    timing: "用户请求密码重置链接时发送。",
-    categoryLabel: "认证安全",
+    label: "重置登录密码",
+    timing: "当用户申请获取密码重置链接时自动发出。",
+    categoryLabel: "账户安全",
   },
   "notification_email.verify_code": {
     label: "通知邮箱验证码",
-    timing: "用户添加并验证额外通知邮箱时发送。",
-    categoryLabel: "认证安全",
+    timing: "在用户新增并校验补充通知邮箱时触发发送。",
+    categoryLabel: "账户安全",
   },
   "subscription.purchase_success": {
-    label: "订阅开通成功",
-    timing: "订阅订单完成支付并成功开通或续期后发送。",
-    categoryLabel: "订阅",
+    label: "订阅开通完毕",
+    timing: "订单付款成功、订阅完成激活或续费后发出。",
+    categoryLabel: "订阅服务",
   },
   "subscription.expiry_reminder": {
-    label: "订阅到期提醒",
-    timing: "后台任务在订阅仍有效且距离到期剩余 7 天、3 天、1 天时各发送一次，可通过邮件设置中的开关关闭。",
-    categoryLabel: "订阅",
+    label: "订阅临期提醒",
+    timing: "后台定时任务检测到有效订阅还剩 7 天、3 天、1 天到期时分别发送，可在邮件设置里关闭。",
+    categoryLabel: "订阅服务",
   },
   "balance.low": {
-    label: "余额不足提醒",
-    timing: "用户余额低于全局或个人配置的提醒阈值时发送。",
-    categoryLabel: "计费",
+    label: "余额不足预警",
+    timing: "账户余额跌破全局默认或个人设定的预警线时发出。",
+    categoryLabel: "账务",
   },
   "balance.recharge_success": {
-    label: "余额充值成功",
-    timing: "余额充值订单支付完成并入账后发送。",
-    categoryLabel: "计费",
+    label: "充值到账通知",
+    timing: "充值订单支付完毕且金额入账后发出。",
+    categoryLabel: "账务",
   },
   "account.quota_alert": {
-    label: "账号限额告警",
-    timing: "上游账号的用量达到配置的额度告警阈值时发送给管理员通知邮箱。",
-    categoryLabel: "管理告警",
+    label: "账号额度预警",
+    timing: "上游账号用量触及预设的额度告警线时，发送至管理员通知邮箱。",
+    categoryLabel: "管理员告警",
   },
   "content_moderation.violation_notice": {
-    label: "内容审计违规提醒",
-    timing: "用户请求命中内容审计或风控规则、但尚未被禁用时发送。",
-    categoryLabel: "风控",
+    label: "内容审核违规提示",
+    timing: "用户请求触发内容审核或风控规则，但账号尚未被禁用阶段发出。",
+    categoryLabel: "风控管理",
   },
   "content_moderation.account_disabled": {
-    label: "内容审计禁用账号",
-    timing: "内容审计违规次数达到封禁阈值并自动禁用用户账号时发送。",
-    categoryLabel: "风控",
+    label: "内容审核封禁账号",
+    timing: "违规次数累计至封禁门槛，系统自动停用用户账号时发出。",
+    categoryLabel: "风控管理",
   },
   "ops.alert": {
-    label: "运维告警",
-    timing: "运维监控规则触发告警并满足邮件通知配置时发送给运维收件人。",
-    categoryLabel: "运维",
+    label: "运维监控告警",
+    timing: "监控规则触发告警且符合邮件通知条件时，发送至运维收件人。",
+    categoryLabel: "运维监控",
   },
   "ops.scheduled_report": {
-    label: "运维定时报表",
-    timing: "运维日报、周报、错误摘要或账号健康报表到达配置的发送时间时发送。",
-    categoryLabel: "运维",
+    label: "定时运维报表",
+    timing: "日报、周报、错误汇总或账号健康报表在配置的发送时刻到达时发出。",
+    categoryLabel: "运维监控",
   },
 };
 
 const eventDisplayMetaEn: Record<string, EventDisplayMeta> = {
   "auth.verify_code": {
     label: "Email Verification Code",
-    timing: "Sent for registration, email binding, OAuth pending email completion, or TOTP email verification.",
-    categoryLabel: "Auth",
+    timing: "Triggered during registration, email binding, OAuth email completion, and TOTP email verification.",
+    categoryLabel: "Authentication",
   },
   "auth.password_reset": {
-    label: "Password Reset",
-    timing: "Sent when a user requests a password reset link.",
-    categoryLabel: "Auth",
+    label: "Reset Login Password",
+    timing: "Dispatched automatically once a user applies for a password reset link.",
+    categoryLabel: "Authentication",
   },
   "notification_email.verify_code": {
     label: "Notification Email Verification",
-    timing: "Sent when a user adds and verifies an extra notification email address.",
-    categoryLabel: "Auth",
+    timing: "Triggered when a user adds and verifies a supplementary notification email address.",
+    categoryLabel: "Authentication",
   },
   "subscription.purchase_success": {
-    label: "Subscription Activated",
-    timing: "Sent after a subscription order is paid and the subscription is activated or extended.",
-    categoryLabel: "Subscription",
+    label: "Subscription Activation Complete",
+    timing: "Dispatched once the order is paid and the subscription is activated or renewed.",
+    categoryLabel: "Subscriptions",
   },
   "subscription.expiry_reminder": {
-    label: "Subscription Expiry Reminder",
-    timing: "Sent by the background job when an active subscription has 7, 3, or 1 day remaining. It can be disabled in Email settings.",
-    categoryLabel: "Subscription",
+    label: "Subscription Upcoming Expiry",
+    timing: "Dispatched by the scheduled task when an active subscription has 7, 3, or 1 day left. Can be turned off in Email settings.",
+    categoryLabel: "Subscriptions",
   },
   "balance.low": {
-    label: "Low Balance Alert",
-    timing: "Sent when a user's balance drops below the global or personal reminder threshold.",
-    categoryLabel: "Billing",
+    label: "Low Balance Warning",
+    timing: "Dispatched when the account balance falls below the global default or user-specific alert threshold.",
+    categoryLabel: "Finance",
   },
   "balance.recharge_success": {
-    label: "Balance Recharge Success",
-    timing: "Sent after a balance recharge order is paid and credited.",
-    categoryLabel: "Billing",
+    label: "Top-up Credited Notice",
+    timing: "Dispatched after a top-up order is paid and the amount is credited.",
+    categoryLabel: "Finance",
   },
   "account.quota_alert": {
-    label: "Account Quota Alert",
-    timing: "Sent to admin notification emails when an upstream account reaches the configured quota alert threshold.",
-    categoryLabel: "Admin",
+    label: "Account Quota Warning",
+    timing: "Delivered to admin notification inboxes when an upstream account hits the configured quota alert line.",
+    categoryLabel: "Admin Alerts",
   },
   "content_moderation.violation_notice": {
-    label: "Risk Control Violation Notice",
-    timing: "Sent when a user request triggers content moderation or risk-control rules but the account is not disabled yet.",
-    categoryLabel: "Risk Control",
+    label: "Content Moderation Violation Tip",
+    timing: "Dispatched when a user request trips content moderation or risk-control rules but the account remains active.",
+    categoryLabel: "Risk Management",
   },
   "content_moderation.account_disabled": {
-    label: "Risk Control Account Disabled",
-    timing: "Sent when content moderation reaches the ban threshold and automatically disables the user account.",
-    categoryLabel: "Risk Control",
+    label: "Content Moderation Account Ban",
+    timing: "Dispatched when violation counts hit the ban threshold and the account is automatically disabled.",
+    categoryLabel: "Risk Management",
   },
   "ops.alert": {
-    label: "Ops Alert",
-    timing: "Sent to ops recipients when an ops monitoring rule fires and email notification settings allow it.",
-    categoryLabel: "Ops",
+    label: "Ops Monitoring Alert",
+    timing: "Delivered to ops recipients when a monitoring rule fires and email notification conditions are met.",
+    categoryLabel: "Ops Monitoring",
   },
   "ops.scheduled_report": {
-    label: "Ops Scheduled Report",
-    timing: "Sent when a configured daily, weekly, error digest, or account health report reaches its scheduled send time.",
-    categoryLabel: "Ops",
+    label: "Scheduled Ops Report",
+    timing: "Dispatched when a configured daily, weekly, error digest, or account health report reaches its send time.",
+    categoryLabel: "Ops Monitoring",
   },
 };
 
@@ -476,14 +476,14 @@ function formatEventOptionLabel(option: EmailTemplateOption): string {
 
 function formatCategory(category: string): string {
   const normalized = category.trim().toLowerCase();
-  if (!normalized) return localText("通知", "Notification");
+  if (!normalized) return localText("提示通知", "Notification");
   const labels: Record<string, { zh: string; en: string }> = {
-    auth: { zh: "认证安全", en: "Auth" },
-    subscription: { zh: "订阅", en: "Subscription" },
-    billing: { zh: "计费", en: "Billing" },
-    admin: { zh: "管理告警", en: "Admin" },
-    risk_control: { zh: "风控", en: "Risk Control" },
-    ops: { zh: "运维", en: "Ops" },
+    auth: { zh: "账户安全", en: "Authentication" },
+    subscription: { zh: "订阅服务", en: "Subscriptions" },
+    billing: { zh: "账务", en: "Finance" },
+    admin: { zh: "管理员告警", en: "Admin Alerts" },
+    risk_control: { zh: "风控管理", en: "Risk Management" },
+    ops: { zh: "运维监控", en: "Ops Monitoring" },
   };
   const item = labels[normalized];
   return item ? localText(item.zh, item.en) : category;

@@ -46,7 +46,7 @@
             :disabled="isLoading"
             class="input py-3 text-center font-mono text-xl tracking-[0.5em]"
             :class="{ 'input-error': errors.code }"
-            placeholder="000000"
+            placeholder="6-digit code"
           />
           <p class="input-hint text-center">{{ t('auth.verificationCodeHint') }}</p>
         </div>

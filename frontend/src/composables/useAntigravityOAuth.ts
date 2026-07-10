@@ -104,7 +104,7 @@ export function useAntigravityOAuth() {
     } catch (err: any) {
       error.value =
         err.response?.data?.detail || t('admin.accounts.oauth.antigravity.failedToValidateRT')
-      // Don't show global error toast for batch validation to avoid spamming
+      // Suppress the global error toast during batch validation to prevent notification flooding
       // appStore.showError(error.value)
       return null
     } finally {

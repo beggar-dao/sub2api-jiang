@@ -1,22 +1,22 @@
 export default {
   batchImageGuide: {
     title: '图片批量生成',
-    description: '一次提交多条提示词，任务完成后可统一下载图片结果'
+    description: '一次性提交多条提示词，任务完成后可统一下载生成的图片'
   },
   // Home Page
   home: {
-    viewOnGithub: '在 GitHub 上查看',
-    viewDocs: '查看文档',
+    viewOnGithub: '前往 GitHub 查看',
+    viewDocs: '查阅文档',
     docs: '文档',
-    switchToLight: '切换到浅色模式',
-    switchToDark: '切换到深色模式',
+    switchToLight: '切换至浅色模式',
+    switchToDark: '切换至深色模式',
     dashboard: '控制台',
     login: '登录',
     getStarted: '立即开始',
     goToDashboard: '进入控制台',
     // 新增：面向用户的价值主张
-    heroSubtitle: '一个密钥，畅用多个 AI 模型',
-    heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
+    heroSubtitle: '一把密钥，畅享多款 AI 模型',
+    heroDescription: '免去管理多个订阅账号的烦恼，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
     tags: {
       subscriptionToApi: '订阅转 API',
       stickySession: '会话保持',
@@ -24,38 +24,38 @@ export default {
     },
     // 用户痛点区块
     painPoints: {
-      title: '你是否也遇到这些问题？',
+      title: '这些困扰你是否也遇到过？',
       items: {
         expensive: {
-          title: '订阅费用高',
-          desc: '每个 AI 服务都要单独订阅，每月支出越来越多'
+          title: '订阅费用偏高',
+          desc: '每款 AI 服务都得单独订阅，每月开销持续攀升'
         },
         complex: {
-          title: '多账号难管理',
-          desc: '不同平台的账号、密钥分散各处，管理起来很麻烦'
+          title: '多账号难以打理',
+          desc: '不同平台的账号和密钥散落各处，管理起来十分繁琐'
         },
         unstable: {
-          title: '服务不稳定',
-          desc: '单一账号容易触发限制，影响正常使用'
+          title: '服务不够稳定',
+          desc: '单个账号容易触发频率限制，影响日常使用'
         },
         noControl: {
-          title: '用量无法控制',
-          desc: '不知道钱花在哪了，也无法限制团队成员的使用'
+          title: '用量难以掌控',
+          desc: '不清楚费用去向，也无法对团队成员的使用进行限制'
         }
       }
     },
     // 解决方案区块
     solutions: {
-      title: '我们帮你解决',
-      subtitle: '简单三步，开始省心使用 AI'
+      title: '我们助你逐一化解',
+      subtitle: '简单三步，开启省心的 AI 体验'
     },
     features: {
       unifiedGateway: '一键接入',
-      unifiedGatewayDesc: '获取一个 API 密钥，即可调用所有已接入的 AI 模型，无需分别申请。',
+      unifiedGatewayDesc: '只需获取一个 API 密钥，即可调用所有已接入的 AI 模型，无需逐一申请。',
       multiAccount: '稳定可靠',
-      multiAccountDesc: '智能调度多个上游账号，自动切换和负载均衡，告别频繁报错。',
+      multiAccountDesc: '智能调度多个上游账号，自动切换并实现负载均衡，告别频繁报错。',
       balanceQuota: '用多少付多少',
-      balanceQuotaDesc: '按实际使用量计费，支持设置配额上限，团队用量一目了然。'
+      balanceQuotaDesc: '按实际使用量计费，支持设置配额上限，团队用量清晰可见。'
     },
     // 优势对比
     comparison: {
@@ -68,18 +68,18 @@ export default {
       items: {
         pricing: {
           feature: '付费方式',
-          official: '固定月费，用不完也付',
+          official: '固定月费，用不完也照付',
           us: '按量付费，用多少付多少'
         },
         models: {
           feature: '模型选择',
           official: '单一服务商',
-          us: '多模型随意切换'
+          us: '多模型随心切换'
         },
         management: {
           feature: '账号管理',
-          official: '每个服务单独管理',
-          us: '统一密钥，一站管理'
+          official: '每个服务需单独管理',
+          us: '统一密钥，一站打理'
         },
         stability: {
           feature: '服务稳定性',
@@ -106,7 +106,7 @@ export default {
     // CTA 区块
     cta: {
       title: '准备好开始了吗？',
-      description: '注册即可获得免费试用额度，体验一站式 AI 服务',
+      description: '注册即可领取免费试用额度，体验一站式 AI 服务',
       button: '免费注册'
     },
     footer: {
@@ -117,11 +117,11 @@ export default {
   // Key Usage Query Page
   keyUsage: {
     title: 'API Key 用量查询',
-    subtitle: '输入您的 API Key 以查看实时消费金额与使用状态',
+    subtitle: '输入您的 API Key，查看实时消费金额与使用状态',
     placeholder: 'sk-ant-mirror-xxxxxxxxxxxx',
     query: '查询',
-    querying: '查询中...',
-    privacyNote: '您的 Key 仅在浏览器本地处理，不会被存储',
+    querying: '正在查询...',
+    privacyNote: '您的 Key 仅在浏览器本地处理，不会上传或存储',
     dateRange: '统计范围:',
     dateRangeToday: '今日',
     dateRange7d: '7 天',
@@ -157,7 +157,7 @@ export default {
     limitMonthly: '月限额',
     // Detail rows
     remainingQuota: '剩余额度',
-    expiresAt: '过期时间',
+    expiresAt: '到期时间',
     todayExpires: '(今日到期)',
     daysLeft: '({days} 天)',
     usedQuota: '已用额度',
@@ -186,7 +186,7 @@ export default {
     querySuccess: '查询成功',
     queryFailed: '查询失败',
     queryFailedRetry: '查询失败，请稍后重试',
-    noDailyUsage: '暂无按日用量数据',
+    noDailyUsage: '当前没有按日用量数据',
   },
 
   // Setup Wizard
@@ -195,7 +195,7 @@ export default {
     description: '配置您的 Sub2API 实例',
     database: {
       title: '数据库配置',
-      description: '连接到您的 PostgreSQL 数据库',
+      description: '连接至您的 PostgreSQL 数据库',
       host: '主机',
       port: '端口',
       username: '用户名',
@@ -212,7 +212,7 @@ export default {
     },
     redis: {
       title: 'Redis 配置',
-      description: '连接到您的 Redis 服务器',
+      description: '连接至您的 Redis 服务器',
       host: '主机',
       port: '端口',
       password: '密码（可选）',
@@ -229,25 +229,25 @@ export default {
       confirmPassword: '确认密码',
       passwordPlaceholder: '至少 8 个字符',
       confirmPasswordPlaceholder: '确认密码',
-      passwordMismatch: '密码不匹配'
+      passwordMismatch: '两次输入的密码不一致'
     },
     ready: {
       title: '准备安装',
-      description: '检查您的配置并完成安装',
+      description: '请核对您的配置并完成安装',
       database: '数据库',
       redis: 'Redis',
       adminEmail: '管理员邮箱'
     },
     status: {
-      testing: '测试中...',
+      testing: '正在测试...',
       success: '连接成功',
       testConnection: '测试连接',
-      installing: '安装中...',
+      installing: '正在安装...',
       completeInstallation: '完成安装',
       completed: '安装完成！',
-      redirecting: '正在跳转到登录页面...',
+      redirecting: '即将跳转至登录页面...',
       restarting: '服务正在重启，请稍候...',
-      timeout: '服务重启时间超出预期，请手动刷新页面。'
+      timeout: '服务重启耗时超出预期，请手动刷新页面。'
     }
   },
 

@@ -5,7 +5,7 @@ export interface UseAutoRefreshOptions {
   intervals?: readonly number[]
   defaultInterval?: number
   onRefresh: () => Promise<void> | void
-  /** Skip tick when this returns true (e.g. modal open, document hidden). */
+  /** Returns true to skip the current tick (e.g. when a modal is open or the document is hidden). */
   shouldPause?: () => boolean
 }
 
@@ -33,7 +33,7 @@ export function useAutoRefresh(options: UseAutoRefreshOptions) {
       enabled.value = parsed.enabled === true
       const iv = Number(parsed.interval_seconds)
       if (intervals.includes(iv as any)) intervalSeconds.value = iv
-    } catch { /* ignore */ }
+    } catch { /* silently skip */ }
   }
 
   function saveToStorage() {
@@ -42,7 +42,7 @@ export function useAutoRefresh(options: UseAutoRefreshOptions) {
         enabled: enabled.value,
         interval_seconds: intervalSeconds.value,
       }))
-    } catch { /* ignore */ }
+    } catch { /* disregard */ }
   }
 
   async function tick() {

@@ -2,27 +2,27 @@ import type { UsageLog } from '@/types'
 
 type Translate = (key: string) => string
 
-// --- Image output token / cost helpers ---
+// --- Image output tokens & cost utilities ---
 
 type ImageOutputTokenRow = Pick<UsageLog, 'output_tokens' | 'image_output_tokens'>
 type ImageOutputCostRow = Pick<UsageLog, 'image_output_cost'>
 
-/** Whether the row contains any image-output tokens. */
+/** Indicates if the row carries image-output tokens. */
 export const hasImageOutputTokens = (row: ImageOutputTokenRow | null | undefined): boolean =>
   (row?.image_output_tokens ?? 0) > 0
 
 /**
- * Text-only output tokens (total output minus image-output).
- * Returns 0 when no text tokens exist.
+ * Output tokens attributed to text only (total output less image-output).
+ * Yields 0 when no text tokens are present.
  */
 export const textOutputTokens = (row: ImageOutputTokenRow | null | undefined): number =>
   Math.max(0, (row?.output_tokens ?? 0) - (row?.image_output_tokens ?? 0))
 
-/** Whether the row has a non-zero image-output cost. */
+/** Indicates if the row carries a non-zero image-output cost. */
 export const hasImageOutputCost = (row: ImageOutputCostRow | null | undefined): boolean =>
   (row?.image_output_cost ?? 0) > 0
 
-// --- Image size / billing helpers ---
+// --- Image dimensions & billing utilities ---
 
 const knownImageSizeSources = new Set(['output', 'input', 'default', 'legacy'])
 const knownImageBillingSizes = new Set(['1K', '2K', '4K', 'mixed'])

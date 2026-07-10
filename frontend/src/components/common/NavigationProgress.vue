@@ -18,7 +18,7 @@ const isVisible = computed(() => isLoading.value)
       v-show="isVisible"
       class="navigation-progress"
       role="progressbar"
-      aria-label="Loading"
+      aria-label="Page loading"
       aria-valuenow="0"
       aria-valuemin="0"
       aria-valuemax="100"

@@ -24,7 +24,7 @@ export interface TokenInfo {
 export function useAccountOAuth() {
   const appStore = useAppStore()
 
-  // State
+  // Reactive state
   const authUrl = ref('')
   const authCode = ref('')
   const sessionId = ref('')
@@ -32,7 +32,7 @@ export function useAccountOAuth() {
   const loading = ref(false)
   const error = ref('')
 
-  // Reset state
+  // Reset all reactive state
   const resetState = () => {
     authUrl.value = ''
     authCode.value = ''
@@ -42,7 +42,7 @@ export function useAccountOAuth() {
     error.value = ''
   }
 
-  // Generate auth URL
+  // Generate the auth URL
   const generateAuthUrl = async (
     addMethod: AddMethod,
     proxyId?: number | null
@@ -72,7 +72,7 @@ export function useAccountOAuth() {
     }
   }
 
-  // Exchange auth code for tokens
+  // Exchange the auth code for tokens
   const exchangeAuthCode = async (
     addMethod: AddMethod,
     proxyId?: number | null
@@ -108,7 +108,7 @@ export function useAccountOAuth() {
     }
   }
 
-  // Cookie-based authentication
+  // Cookie-based auth flow
   const cookieAuth = async (
     addMethod: AddMethod,
     sessionKeyValue: string,
@@ -144,7 +144,7 @@ export function useAccountOAuth() {
     }
   }
 
-  // Parse multiple session keys
+  // Parse a batch of session keys
   const parseSessionKeys = (input: string): string[] => {
     return input
       .split('\n')
@@ -152,7 +152,7 @@ export function useAccountOAuth() {
       .filter((k) => k)
   }
 
-  // Build extra info from token response
+  // Build the extra-info payload from the token response
   const buildExtraInfo = (tokenInfo: TokenInfo): Record<string, string> | undefined => {
     const extra: Record<string, string> = {}
     if (tokenInfo.org_uuid) {
@@ -168,14 +168,14 @@ export function useAccountOAuth() {
   }
 
   return {
-    // State
+    // Reactive state
     authUrl,
     authCode,
     sessionId,
     sessionKey,
     loading,
     error,
-    // Methods
+    // Exposed methods
     resetState,
     generateAuthUrl,
     exchangeAuthCode,

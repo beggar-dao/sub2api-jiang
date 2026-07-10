@@ -1,7 +1,7 @@
 /**
- * Shared URL builder for iframe-embedded pages.
- * Used by PurchaseSubscriptionView and CustomPageView to build consistent URLs
- * with user_id, token, theme, lang, ui_mode, src_host, and src parameters.
+ * Common URL builder for iframe-embedded pages.
+ * Consumed by PurchaseSubscriptionView and CustomPageView to construct consistent URLs
+ * carrying user_id, token, theme, lang, ui_mode, src_host, and src parameters.
  */
 
 const EMBEDDED_USER_ID_QUERY_KEY = 'user_id'
@@ -34,7 +34,7 @@ export function buildEmbeddedUrl(
       url.searchParams.set(EMBEDDED_LANG_QUERY_KEY, lang)
     }
     url.searchParams.set(EMBEDDED_UI_MODE_QUERY_KEY, EMBEDDED_UI_MODE_VALUE)
-    // Source tracking: let the embedded page know where it's being loaded from
+    // Source tracking: inform the embedded page of its embedding origin
     if (typeof window !== 'undefined') {
       url.searchParams.set(EMBEDDED_SRC_HOST_QUERY_KEY, window.location.origin)
       url.searchParams.set(EMBEDDED_SRC_QUERY_KEY, window.location.href)

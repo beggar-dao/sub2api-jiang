@@ -1,13 +1,13 @@
 /**
- * Shared formatting helpers for channel monitor views (admin + user).
+ * Shared formatting helpers for channel-monitor views (admin + user).
  *
- * Centralises:
- *  - status / provider label + badge class lookups
- *  - latency / availability / percent number formatting
- *  - dashboard-style helpers (HSL for availability, provider gradient, relative time)
+ * Consolidates:
+ *  - status / provider label and badge-class lookups
+ *  - latency / availability / percent numeric formatting
+ *  - dashboard-oriented helpers (HSL for availability, provider gradient, relative time)
  *
- * i18n keys live under `monitorCommon.*` so admin and user views share the
- * same translation source.
+ * i18n keys are namespaced under `monitorCommon.*` so that admin and user views
+ * draw from a shared translation source.
  */
 
 import { useI18n } from 'vue-i18n'
@@ -24,7 +24,7 @@ import {
 
 const NEUTRAL_BADGE = 'bg-gray-100 text-gray-800 dark:bg-dark-700 dark:text-gray-300'
 
-/** Availability HSL hue multiplier: 0%=red(0) / 50%=yellow(60) / 100%=green(120). */
+/** Availability HSL hue multiplier: 0% maps to red(0), 50% to yellow(60), 100% to green(120). */
 const HSL_HUE_PER_PERCENT = 1.2
 const HSL_SATURATION = 72
 const HSL_LIGHTNESS = 42
@@ -77,9 +77,9 @@ export function useChannelMonitorFormat() {
   }
 
   /**
-   * Tailwind class for a provider radio-button-style picker (active/inactive state).
-   * Reuses the same emerald/orange/sky palette as providerBadgeClass to keep
-   * visual semantics consistent across badges and pickers.
+   * Tailwind classes for a radio-button-style provider picker (active vs. inactive).
+   * Mirrors the emerald/orange/sky palette used by providerBadgeClass so that
+   * badges and pickers stay visually consistent.
    */
   function providerPickerClass(p: Provider | string, active: boolean): string {
     switch (p) {
@@ -145,8 +145,8 @@ export function useChannelMonitorFormat() {
 }
 
 /**
- * Map availability percent to an HSL colour (red -> yellow -> green).
- * Returns undefined for null/NaN so callers can fall back to a neutral colour.
+ * Convert an availability percentage into an HSL colour (red -> yellow -> green).
+ * Returns undefined when the input is null or NaN, letting callers apply a neutral fallback colour.
  */
 export function hslForPct(pct: number | null | undefined): string | undefined {
   if (pct === null || pct === undefined || Number.isNaN(pct)) return undefined
@@ -156,7 +156,7 @@ export function hslForPct(pct: number | null | undefined): string | undefined {
 }
 
 /**
- * Tailwind gradient class for the provider icon tile background.
+ * Tailwind gradient classes applied to the provider icon tile's background.
  */
 export function providerGradient(provider: string): string {
   switch (provider) {

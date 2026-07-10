@@ -1,6 +1,6 @@
 /**
  * Onboarding Store
- * Manages onboarding tour state and control methods
+ * Holds onboarding tour state along with its control methods
  */
 
 import { defineStore } from 'pinia'
@@ -16,7 +16,7 @@ export const useOnboardingStore = defineStore('onboarding', () => {
   const nextStepCallback = ref<NextStepCallback | null>(null)
   const isCurrentStepCallback = ref<IsCurrentStepCallback | null>(null)
 
-  // 全局 driver 实例，跨组件保持
+  // 全局 driver 实例，在组件之间共享
   const driverInstance = shallowRef<Driver | null>(null)
 
   function setReplayCallback(callback: VoidCallback | null): void {
@@ -55,8 +55,8 @@ export const useOnboardingStore = defineStore('onboarding', () => {
   }
 
   /**
-   * Manually advance to the next step
-   * @param delay Optional delay in ms (useful for waiting for animations)
+   * Step forward to the next tour step manually
+   * @param delay Optional delay in ms (handy when you need to wait for animations)
    */
   async function nextStep(delay = 0): Promise<void> {
     if (nextStepCallback.value) {
@@ -65,7 +65,7 @@ export const useOnboardingStore = defineStore('onboarding', () => {
   }
 
   /**
-   * Check if the tour is currently highlighting a specific element
+   * Determine whether the tour is currently highlighting the given element
    */
   function isCurrentStep(selector: string): boolean {
     if (isCurrentStepCallback.value) {

@@ -1,8 +1,8 @@
 /**
- * 请求延迟健康度分档（用于用量明细"延迟"列的纵向健康扫视）。
+ * 请求延迟健康等级划分（供用量明细"延迟"列做纵向健康度扫描）。
  *
- * 首 Token（TTFT）：10s 内正常，10-30s 偏慢，30-60s 缓慢，60s 及以上严重。
- * 总耗时：流式请求整体时长天然更长，阈值放宽为 1min / 3min / 5min。
+ * 首 Token（TTFT）：10s 以内正常，10-30s 略慢，30-60s 较慢，60s 起为严重。
+ * 总耗时：流式请求整体周期天然偏长，阈值相应放宽至 1min / 3min / 5min。
  */
 export type LatencySeverity = 'good' | 'warn' | 'slow' | 'critical'
 
@@ -44,7 +44,7 @@ export const LATENCY_TEXT_CLASSES: Record<LatencySeverity, string> = {
   critical: 'text-red-600 dark:text-red-400',
 }
 
-/** 无首字数据时的纯色色条（仅按总耗时档着色）。 */
+/** 缺少首字数据时使用的纯色色条（仅依据总耗时档位上色）。 */
 export const LATENCY_BAR_CLASSES: Record<LatencySeverity, string> = {
   good: 'bg-emerald-500',
   warn: 'bg-amber-400',
@@ -52,7 +52,7 @@ export const LATENCY_BAR_CLASSES: Record<LatencySeverity, string> = {
   critical: 'bg-red-500',
 }
 
-/** 渐变色条上端（首字档）；与 LATENCY_BAR_TO_CLASSES 组合成上下渐变，避免两段硬切割裂感。 */
+/** 渐变色条上半段（首字档位）；与 LATENCY_BAR_TO_CLASSES 拼成上下渐变，避免两段拼接处的生硬断裂感。 */
 export const LATENCY_BAR_FROM_CLASSES: Record<LatencySeverity, string> = {
   good: 'from-emerald-500',
   warn: 'from-amber-400',
@@ -60,7 +60,7 @@ export const LATENCY_BAR_FROM_CLASSES: Record<LatencySeverity, string> = {
   critical: 'from-red-500',
 }
 
-/** 渐变色条下端（总耗时档）。 */
+/** 渐变色条下半段（总耗时档位）。 */
 export const LATENCY_BAR_TO_CLASSES: Record<LatencySeverity, string> = {
   good: 'to-emerald-500',
   warn: 'to-amber-400',

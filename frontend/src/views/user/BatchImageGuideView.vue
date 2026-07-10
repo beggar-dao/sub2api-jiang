@@ -21,12 +21,12 @@
               <button type="button" class="btn btn-secondary" :disabled="loadingJobs" @click="resetFilters">
                 重置
               </button>
-              <button type="button" class="btn btn-secondary" :disabled="loadingKeys || loadingJobs" :title="'刷新'" @click="refreshPage">
+              <button type="button" class="btn btn-secondary" :disabled="loadingKeys || loadingJobs" :title="'刷新数据'" @click="refreshPage">
                 <Icon name="refresh" size="md" :class="loadingKeys || loadingJobs ? 'animate-spin' : ''" />
               </button>
               <button type="button" class="btn btn-secondary" @click="showGuideModal = true">
                 <Icon name="book" size="md" class="mr-2" />
-                使用说明
+                操作说明
               </button>
               <button type="button" class="btn btn-primary" @click="openCreateModal">
                 <Icon name="plus" size="md" class="mr-2" />
@@ -40,7 +40,7 @@
             class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm dark:border-dark-700 dark:bg-dark-800"
           >
             <span class="text-sm text-gray-600 dark:text-gray-300">
-              已选择 <span class="font-medium text-gray-900 dark:text-white">{{ selectedJobIds.size }}</span> 个任务
+              当前已选 <span class="font-medium text-gray-900 dark:text-white">{{ selectedJobIds.size }}</span> 个任务
             </span>
             <div class="flex flex-wrap items-center gap-2">
               <button
@@ -50,7 +50,7 @@
                 @click="downloadSelectedJobs"
               >
                 <Icon :name="bulkDownloading ? 'refresh' : 'download'" size="sm" class="mr-1.5" :class="bulkDownloading ? 'animate-spin' : ''" />
-                下载选中
+                批量打包下载
               </button>
               <button
                 type="button"
@@ -59,7 +59,7 @@
                 @click="deleteSelectedJobs"
               >
                 <Icon :name="bulkDeleting ? 'refresh' : 'trash'" size="sm" class="mr-1.5" :class="bulkDeleting ? 'animate-spin' : ''" />
-                删除记录
+                批量移除
               </button>
             </div>
           </div>
@@ -113,7 +113,7 @@
                 >
                   <span class="min-w-0 truncate">{{ row.task_name || defaultTaskName(row.created_at) }}</span>
                   <span v-if="row.child_count > 0 && !row.is_child" class="flex-shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-normal text-gray-600 dark:bg-dark-700 dark:text-gray-300">
-                    {{ row.child_count }} 子任务
+                    {{ row.child_count }} 个子任务
                   </span>
                   <span v-if="row.is_child" class="flex-shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-normal text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
                     子任务
@@ -134,7 +134,7 @@
 
           <template #cell-api_key_name="{ value }">
             <span class="block truncate text-center text-sm text-gray-700 dark:text-gray-300">
-              {{ value || '未记录' }}
+              {{ value || '暂无记录' }}
             </span>
           </template>
 
@@ -151,7 +151,7 @@
               <span class="text-emerald-600 dark:text-emerald-300">{{ displayJob(row).success_count }}</span>
               <span class="text-gray-300 dark:text-dark-500">/</span>
               <span :class="displayJob(row).fail_count > 0 ? 'text-red-600 dark:text-red-300' : 'text-gray-400 dark:text-gray-500'">{{ displayJob(row).fail_count }}</span>
-              <span class="text-xs text-gray-400 dark:text-gray-500">共 {{ displayJob(row).item_count }}</span>
+              <span class="text-xs text-gray-400 dark:text-gray-500">合计 {{ displayJob(row).item_count }}</span>
             </div>
           </template>
 
@@ -172,18 +172,18 @@
               <button
                 type="button"
                 class="batch-row-action flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:hover:bg-dark-700 dark:hover:text-primary-400"
-                title="查看详情"
+                title="查看任务明细"
                 @click="selectJob(row.id)"
               >
                 <Icon name="eye" size="sm" />
-                <span class="text-xs">查看</span>
+                <span class="text-xs">明细</span>
               </button>
               <button
                 type="button"
                 class="batch-row-action flex flex-col items-center gap-0.5 rounded-lg p-1.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30"
                 :class="canDownload(row) ? 'text-gray-500 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400' : 'text-gray-300 dark:text-dark-500'"
                 :disabled="!canDownload(row) || downloading"
-                title="下载 ZIP"
+                title="下载 ZIP 压缩包"
                 @click="downloadJob(row)"
               >
                 <Icon
@@ -191,8 +191,8 @@
 	                  size="sm"
 	                  :class="isDownloadingJob(row.id) ? 'animate-spin' : ''"
 	                />
-                <span class="text-xs">下载</span>
-	              </button>
+                <span class="text-xs">打包下载</span>
+              </button>
               <div v-if="canRetry(row) || canDeleteRecord(row)">
                 <button
                   type="button"
@@ -202,7 +202,7 @@
                   @click.stop="toggleMoreMenu(row, $event)"
                 >
                   <Icon name="more" size="sm" />
-                  <span class="text-xs">更多</span>
+                  <span class="text-xs">更多操作</span>
                 </button>
               </div>
 	            </div>
@@ -211,9 +211,9 @@
           <template #empty>
             <div class="flex min-h-[260px] flex-col items-center justify-center py-6 md:min-h-[300px]">
               <Icon name="sparkles" size="xl" class="mb-4 h-12 w-12 text-gray-400 dark:text-dark-500" />
-              <p class="text-lg font-medium text-gray-900 dark:text-gray-100">暂无批量任务</p>
+              <p class="text-lg font-medium text-gray-900 dark:text-gray-100">暂无批量任务记录</p>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                点击右上角创建批量任务。
+                点击右上方「创建批量任务」即可开始生成图片。
               </p>
             </div>
           </template>
@@ -227,13 +227,13 @@
         >
           <div class="flex flex-wrap items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
             <span>
-              第 <span class="font-medium">{{ pagination.page }}</span> 页
+              当前第 <span class="font-medium">{{ pagination.page }}</span> 页
             </span>
             <span>
-              本页 <span class="font-medium">{{ visibleBatchJobs.length }}</span> 条
+              本页共 <span class="font-medium">{{ visibleBatchJobs.length }}</span> 条
             </span>
             <div class="flex items-center gap-2">
-              <span>每页</span>
+              <span>每页显示</span>
               <Select
                 v-model="pagination.page_size"
                 :options="batchPageSizeOptions"
@@ -283,7 +283,7 @@
               @click="retryFailedJob(job)"
             >
               <Icon name="refresh" size="sm" :class="retryingBatchId === job.id ? 'animate-spin' : ''" />
-              重试失败项
+              重试失败图片
             </button>
             <button
               v-if="canDeleteRecord(job)"
@@ -293,7 +293,7 @@
               @click="deleteJob(job)"
             >
               <Icon :name="deletingBatchId === job.id ? 'refresh' : 'trash'" size="sm" :class="deletingBatchId === job.id ? 'animate-spin' : ''" />
-              删除记录
+              移除该记录
             </button>
           </template>
         </template>
@@ -309,7 +309,7 @@
         @mouseleave="schedulePromptPopoverClose"
       >
         <div class="mb-2 flex items-center justify-between gap-3">
-          <span class="text-xs font-medium text-gray-500 dark:text-gray-400">完整 Prompt</span>
+          <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Prompt 完整内容</span>
           <button
             type="button"
             class="rounded-md px-2 py-1 text-xs font-medium text-primary-600 transition-colors hover:bg-primary-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:text-primary-300 dark:hover:bg-primary-900/20"
@@ -324,12 +324,12 @@
       </div>
     </Teleport>
 
-    <BaseDialog :show="!!currentJob" title="任务详情" width="extra-wide" @close="closeDetail">
+    <BaseDialog :show="!!currentJob" title="任务明细" width="extra-wide" @close="closeDetail">
       <div v-if="currentJob" class="space-y-4">
         <div class="rounded-lg border border-gray-200 bg-gray-50/70 px-4 py-3 dark:border-dark-700 dark:bg-dark-900/40">
           <div class="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
             <div class="min-w-0 text-center">
-              <p class="text-xs text-gray-500 dark:text-gray-400">状态</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">当前状态</p>
               <div class="mt-1 flex justify-center">
                 <span :class="statusBadgeClass(currentDisplayJob || currentJob)" class="badge whitespace-nowrap">
                   {{ statusLabel(currentDisplayJob || currentJob) }}
@@ -337,7 +337,7 @@
               </div>
             </div>
             <div class="min-w-0 text-center">
-              <p class="text-xs text-gray-500 dark:text-gray-400">{{ hasChildJobs(currentJob.id) ? '汇总结果' : '结果' }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ hasChildJobs(currentJob.id) ? '汇总产出' : '产出数量' }}</p>
               <p class="mt-1 flex items-center justify-center gap-2 font-medium tabular-nums">
               <span class="text-emerald-600 dark:text-emerald-300">{{ (currentDisplayJob || currentJob).success_count }}</span>
               <span class="text-gray-300 dark:text-dark-500">/</span>
@@ -345,23 +345,23 @@
             </p>
             </div>
             <div class="min-w-0 text-center">
-              <p class="text-xs text-gray-500 dark:text-gray-400">费用</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">计费金额</p>
               <p class="mt-1 truncate font-medium text-gray-900 dark:text-white">{{ costLabel(currentDisplayJob || currentJob) }}</p>
             </div>
             <div class="min-w-0 text-center">
-              <p class="text-xs text-gray-500 dark:text-gray-400">下载状态</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">是否已下载</p>
               <p class="mt-1 truncate font-medium text-gray-900 dark:text-white">
-              {{ currentJob.downloaded_at ? formatDate(currentJob.downloaded_at) : '未下载' }}
+              {{ currentJob.downloaded_at ? formatDate(currentJob.downloaded_at) : '还未下载' }}
             </p>
             </div>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white">明细</h3>
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white">明细列表</h3>
           <button type="button" class="btn btn-secondary btn-sm" :disabled="refreshing || loadingItems" @click="refreshDetail">
             <Icon name="refresh" size="sm" class="mr-1.5" :class="refreshing || loadingItems ? 'animate-spin' : ''" />
-            刷新
+            刷新明细
           </button>
         </div>
 
@@ -376,11 +376,11 @@
             </colgroup>
             <thead class="bg-gray-50 dark:bg-dark-800/80">
               <tr>
-                <th class="px-3 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">Custom ID</th>
-                <th class="px-3 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Prompt</th>
+                <th class="px-3 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">条目标识</th>
+                <th class="px-3 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">提示词</th>
                 <th class="px-3 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">状态</th>
-                <th class="px-3 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">预览</th>
-                <th class="px-3 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">结果</th>
+                <th class="px-3 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">缩略图</th>
+                <th class="px-3 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">产出</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
@@ -426,7 +426,7 @@
                       v-if="itemPreviewUrls[itemPreviewKey(item)] && !previewErrorIds.has(itemPreviewKey(item))"
                       type="button"
                       class="block h-full w-full overflow-hidden"
-                      :title="`放大压缩预览 ${item.custom_id}`"
+                      :title="`点击查看大图 ${item.custom_id}`"
                       @click="openImagePreview(item)"
                     >
                       <img
@@ -441,12 +441,12 @@
                       type="button"
                       class="flex h-full w-full items-center justify-center text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 disabled:cursor-wait disabled:opacity-70 dark:text-gray-400 dark:hover:bg-dark-700"
                       :disabled="previewLoadingIds.has(itemPreviewKey(item))"
-                      :title="previewErrorIds.has(itemPreviewKey(item)) ? '重新加载压缩预览' : '加载压缩预览'"
+                      :title="previewErrorIds.has(itemPreviewKey(item)) ? '重新加载缩略图' : '加载缩略图'"
                       @click="loadItemPreview(item)"
                     >
                       <Icon :name="previewLoadingIds.has(itemPreviewKey(item)) ? 'refresh' : 'eye'" size="sm" :class="previewLoadingIds.has(itemPreviewKey(item)) ? 'animate-spin' : ''" />
                     </button>
-                    <div v-else class="flex h-full w-full items-center justify-center text-gray-400" :title="item.image_count > 0 ? '不可预览' : '无图片'">
+                    <div v-else class="flex h-full w-full items-center justify-center text-gray-400" :title="item.image_count > 0 ? '暂不支持预览' : '没有图片'">
                       <Icon name="document" size="sm" />
                     </div>
                   </div>
@@ -467,10 +467,10 @@
         <div v-else class="rounded-lg border border-dashed border-gray-200 py-10 text-center dark:border-dark-700">
           <Icon name="refresh" size="lg" class="mx-auto mb-3 text-gray-400" :class="loadingItems ? 'animate-spin' : ''" />
           <p class="text-sm font-medium text-gray-700 dark:text-gray-200">
-            {{ loadingItems ? '正在加载明细...' : '暂无明细' }}
+            {{ loadingItems ? '明细加载中...' : '暂无明细数据' }}
           </p>
           <p v-if="!loadingItems" class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            排队或生成中的任务会先显示已提交的 prompt，结果整理完成后会更新图片状态。
+            处于排队或生成阶段的任务会先展示已提交的 Prompt，待结果整理完毕后会同步更新图片状态。
           </p>
         </div>
       </div>
@@ -479,7 +479,7 @@
         <div class="flex justify-end gap-3">
 	          <button type="button" class="btn btn-secondary" :disabled="!currentJob || !canCancel(currentJob) || cancelling" @click="cancelSelected">
 	            <Icon v-if="cancelling" name="refresh" size="sm" class="mr-2 animate-spin" />
-	            取消任务
+	            撤销任务
 	          </button>
 	          <button
 	            v-if="currentJob && currentDisplayJob && canRetry(currentDisplayJob)"
@@ -489,7 +489,7 @@
 	            @click="retrySelected"
 	          >
 	            <Icon name="refresh" size="sm" class="mr-2" :class="currentJob && retryingBatchId === currentJob.id ? 'animate-spin' : ''" />
-	            重试失败项
+	            重试失败图片
 	          </button>
 	          <button
             type="button"
@@ -503,16 +503,16 @@
               class="mr-2"
               :class="currentJob && isDownloadingJob(currentJob.id) ? 'animate-spin' : ''"
             />
-            下载 ZIP
+            下载 ZIP 压缩包
           </button>
         </div>
       </template>
     </BaseDialog>
 
-    <BaseDialog :show="!!previewImageItem" :title="previewImageItem?.custom_id || '图片预览'" width="extra-wide" :z-index="60" @close="closeImagePreview">
+    <BaseDialog :show="!!previewImageItem" :title="previewImageItem?.custom_id || '图片大图'" width="extra-wide" :z-index="60" @close="closeImagePreview">
       <div class="space-y-3">
         <div class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
-          当前显示的是浏览器本地缓存的压缩缩略图，清晰度会有影响；需要查看原图请下载 ZIP。
+          当前展示的是浏览器本地缓存的压缩缩略图，画质有所折损；如需查看原图，请下载 ZIP 压缩包。
         </div>
         <div class="flex min-h-[420px] items-center justify-center rounded-lg bg-gray-50 p-4 dark:bg-dark-900">
           <img
@@ -525,30 +525,30 @@
       </div>
     </BaseDialog>
 
-    <BaseDialog :show="showCreateModal" title="创建批量任务" width="wide" @close="closeCreateModal">
+    <BaseDialog :show="showCreateModal" title="新建批量生图任务" width="wide" @close="closeCreateModal">
       <form class="space-y-5" @submit.prevent="submitJob">
         <div class="grid gap-4 md:grid-cols-2">
           <div class="md:col-span-2">
-            <label class="input-label">任务名称</label>
+            <label class="input-label">任务名</label>
             <input
               v-model="form.taskName"
               type="text"
               maxlength="255"
               class="input"
-              placeholder="不填写则默认使用当前时间"
+              placeholder="留空则自动以当前时间命名"
             />
           </div>
 
           <div class="md:col-span-2">
             <label class="input-label">API Key</label>
             <select v-model.number="form.apiKeyId" class="input" :disabled="loadingKeys">
-              <option :value="0">{{ loadingKeys ? '加载 API Key 中...' : '请选择 Gemini API Key' }}</option>
+              <option :value="0">{{ loadingKeys ? '正在加载 API Key...' : '请选择 Gemini API Key' }}</option>
               <option v-for="key in geminiApiKeys" :key="key.id" :value="key.id">
                 {{ key.name }} · {{ key.group?.name || 'Gemini' }}
               </option>
             </select>
             <p v-if="!loadingKeys && geminiApiKeys.length === 0" class="input-hint text-amber-600 dark:text-amber-400">
-              当前没有可用于批量生图的 Gemini API Key。请先创建并绑定已开启批量生图的 Gemini 分组。
+              当前没有可用于批量生图的 Gemini API Key。请先创建 API Key，并确保其所属分组已开启批量生图能力。
             </p>
           </div>
 
@@ -570,15 +570,15 @@
           </div>
 
           <div>
-            <label class="input-label">图片尺寸</label>
+            <label class="input-label">输出图片尺寸</label>
             <div class="input flex items-center bg-gray-50 text-gray-600 dark:bg-dark-900 dark:text-gray-300">
               1K
             </div>
-            <p class="input-hint">当前批量任务固定按 1K 图片提交。</p>
+            <p class="input-hint">批量任务当前统一以 1K 尺寸提交。</p>
           </div>
 
           <div>
-            <label class="input-label">输出格式</label>
+            <label class="input-label">图片编码格式</label>
             <select v-model="form.responseMimeType" class="input">
               <option value="image/png">PNG</option>
               <option value="image/jpeg">JPEG</option>
@@ -587,9 +587,9 @@
           </div>
 
           <div>
-            <label class="input-label">预计生成</label>
+            <label class="input-label">预估产出</label>
             <div class="input flex items-center bg-gray-50 text-gray-600 dark:bg-dark-900 dark:text-gray-300">
-              {{ estimatedOutputCount }} 张 / {{ promptRows.length }} 条
+              {{ estimatedOutputCount }} 张图 / {{ promptRows.length }} 条 Prompt
             </div>
           </div>
         </div>
@@ -597,14 +597,14 @@
         <div class="space-y-3">
           <div class="flex items-center justify-between gap-3">
             <label class="input-label mb-0">Prompt</label>
-            <span class="text-xs text-gray-500 dark:text-gray-400">已添加 {{ promptRows.length }} 条</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">列表中共 {{ promptRows.length }} 条</span>
           </div>
           <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-700">
             <textarea
               v-model="promptDraft"
               rows="3"
               class="h-[76px] w-full resize-y rounded-md border border-gray-300 px-3 py-2 text-sm leading-5 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 dark:border-dark-600 dark:bg-dark-900 dark:text-gray-100 dark:focus:border-primary-500 dark:focus:ring-primary-900/40"
-              placeholder="粘贴 prompt，添加后进入下方列表"
+              placeholder="粘贴 Prompt，确认后加入下方列表"
             />
             <div class="mt-2 grid gap-2 md:grid-cols-[minmax(0,1fr)_112px_132px_112px] md:items-center">
               <input
@@ -612,13 +612,13 @@
                 type="text"
                 maxlength="255"
                 class="input h-9 text-sm"
-                placeholder="Custom ID 可选"
+                placeholder="条目标识（可选）"
               />
               <select
                 v-model.number="outputCountDraft"
                 class="batch-output-count-select input h-9 text-sm"
-                title="每条生成张数"
-                aria-label="每条生成张数"
+                title="该条 Prompt 的出图张数"
+                aria-label="该条 Prompt 的出图张数"
               >
                 <option v-for="count in outputCountOptions" :key="count" :value="count">
                   {{ count }} 张
@@ -629,7 +629,7 @@
                 :class="referenceImageDrafts.length >= selectedModelReferenceLimit ? 'pointer-events-none opacity-60' : ''"
               >
                 <Icon name="upload" size="sm" class="mr-1.5" />
-                参考图
+                上传参考图
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
@@ -641,7 +641,7 @@
               </label>
               <button type="button" class="btn btn-secondary h-9 justify-center whitespace-nowrap px-4 text-sm" :disabled="!promptDraft.trim()" @click="addPromptRow">
                 <Icon name="plus" size="sm" class="mr-1.5" />
-                添加
+                加入列表
               </button>
             </div>
             <div v-if="referenceImageDrafts.length" class="mt-3 flex flex-wrap gap-2">
@@ -651,13 +651,13 @@
                 class="inline-flex max-w-full items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700 dark:border-dark-700 dark:bg-dark-900 dark:text-gray-200"
               >
                 <span class="max-w-[180px] truncate">{{ ref.name }}</span>
-                <button type="button" class="text-gray-400 hover:text-red-600" title="移除参考图" @click="removeReferenceImageDraft(refIndex)">
+                <button type="button" class="text-gray-400 hover:text-red-600" title="删除该参考图" @click="removeReferenceImageDraft(refIndex)">
                   <Icon name="x" size="xs" />
                 </button>
               </span>
             </div>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              每条最多 {{ BATCH_IMAGE_MAX_OUTPUTS_PER_ITEM }} 张，整组最多 {{ BATCH_IMAGE_MAX_OUTPUTS_PER_JOB }} 张；当前模型每条最多 {{ selectedModelReferenceLimit }} 张参考图，参考图按生成张数重复消耗输入 token。
+              每条 Prompt 最多 {{ BATCH_IMAGE_MAX_OUTPUTS_PER_ITEM }} 张，整组任务最多 {{ BATCH_IMAGE_MAX_OUTPUTS_PER_JOB }} 张；当前模型每条 Prompt 最多 {{ selectedModelReferenceLimit }} 张参考图，参考图会按出图张数等比例消耗输入 token。
             </p>
           </div>
           <div v-if="promptRows.length" class="overflow-hidden rounded-lg border border-gray-200 dark:border-dark-700">
@@ -672,52 +672,52 @@
                 x{{ row.output_count }}
               </span>
               <span v-if="row.reference_images.length" class="flex-shrink-0 text-xs text-gray-500 dark:text-gray-400">
-                {{ row.reference_images.length }} 参考图
+                {{ row.reference_images.length }} 张参考图
               </span>
-              <button type="button" class="btn-ghost btn-icon flex-shrink-0 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20" title="删除" @click="removePromptRow(index)">
+              <button type="button" class="btn-ghost btn-icon flex-shrink-0 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20" title="移除该条" @click="removePromptRow(index)">
                 <Icon name="trash" size="sm" />
               </button>
             </div>
           </div>
           <div v-else class="rounded-lg border border-dashed border-gray-200 px-3 py-6 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400">
-            还没有添加 prompt。
+            列表为空，请先添加 Prompt。
           </div>
         </div>
 
 	        <div class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
-	          取消任务会请求上游取消；已被系统索引为成功的图片仍会按成功项结算扣费，其余冻结金额会释放。
+	          撤销任务时将向下游服务发送取消请求；已被系统标记为成功的图片仍按成功项计费扣款，剩余冻结额度会被退回。
 	        </div>
 	        <div v-if="submitting" class="rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm leading-6 text-sky-800 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-100">
-	          正在创建上游批量任务，通常需要几秒，请不要重复提交。
+	          正在向下游提交批量任务，通常数秒内完成，期间请勿重复提交。
 	        </div>
 	      </form>
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button type="button" class="btn btn-secondary" :disabled="submitting" @click="closeCreateModal">取消</button>
+          <button type="button" class="btn btn-secondary" :disabled="submitting" @click="closeCreateModal">关闭</button>
 	          <button type="button" class="btn btn-primary inline-flex min-w-[120px] justify-center" :disabled="submitting || loadingModels || (parsedItems.length === 0 && !promptDraft.trim()) || !selectedApiKey || !form.model" @click="submitJob">
             <Icon v-if="submitting" name="refresh" size="sm" class="mr-2 animate-spin" />
-            {{ submitting ? '提交中...' : '提交任务' }}
+            {{ submitting ? '提交中...' : '立即提交' }}
           </button>
         </div>
       </template>
     </BaseDialog>
 
-    <BaseDialog :show="showGuideModal" title="批量生图使用说明" width="wide" @close="showGuideModal = false">
+    <BaseDialog :show="showGuideModal" title="批量生图功能指引" width="wide" @close="showGuideModal = false">
 	      <div class="space-y-5">
 	        <section class="space-y-3">
-	          <h3 class="text-sm font-semibold text-gray-900 dark:text-white">当前界面如何使用</h3>
+	          <h3 class="text-sm font-semibold text-gray-900 dark:text-white">本页操作流程</h3>
 	          <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm leading-6 text-gray-700 dark:border-dark-700 dark:bg-dark-900/50 dark:text-gray-200">
-	            <p>1. 选择已开启批量生图的 Gemini API Key，模型列表会按该 Key 所属分组可用模型展示。</p>
-	            <p>2. 任务名称可以留空，提交时会自动使用当前时间；Prompt 需要一条条添加到列表里，每条 Prompt 可附参考图，也可以设置重复生成张数。</p>
-	            <p>3. 提交后任务会先排队，明细会展示已提交的 Prompt；图片预览默认不加载，点击明细里的预览按钮才会加载单张图。</p>
-	            <p>4. 完成后可以下载 ZIP；部分失败时，更多菜单里可以只重试失败项。当前结算仍按成功输出图张数计算，不单独对参考图加价。</p>
+	            <p>1. 先选择一个所属分组已开启批量生图的 Gemini API Key，模型下拉框会根据该 Key 所属分组加载可用模型。</p>
+	            <p>2. 任务名可以留空，提交时系统会自动用当前时间补齐；Prompt 需逐条添加到下方列表，每条 Prompt 可附带参考图，也可以指定重复出图张数。</p>
+	            <p>3. 提交后任务先进入排队，明细区域会展示已提交的 Prompt；缩略图默认不加载，需要点击明细中的预览按钮手动加载单张图片。</p>
+	            <p>4. 任务完成后可以打包下载 ZIP；如果存在部分失败项，可通过"更多操作"菜单仅针对失败项发起重试。当前计费按最终成功输出的图片张数结算，参考图不会单独计费。</p>
 	          </div>
 	        </section>
 	        <section class="space-y-3">
 	          <div class="flex flex-wrap items-center justify-between gap-3">
-	            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">给 Codex 的 Skill 说明</h3>
-	            <p class="text-xs text-gray-500 dark:text-gray-400">用于告诉 Codex 如何代替用户整理 prompt、提交任务和下载结果。</p>
+	            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">提供给 Codex 的 Skill 文档</h3>
+	            <p class="text-xs text-gray-500 dark:text-gray-400">该文档用于指导 Codex 如何代为整理 Prompt、提交任务并下载结果。</p>
 	          </div>
 	        <textarea
 	          :value="agentInstruction"
@@ -728,10 +728,10 @@
 	      </div>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button type="button" class="btn btn-secondary" @click="showGuideModal = false">关闭</button>
+          <button type="button" class="btn btn-secondary" @click="showGuideModal = false">关闭窗口</button>
           <button type="button" class="btn btn-primary" @click="copyInstruction">
             <Icon name="copy" size="sm" class="mr-2" />
-            复制说明
+            复制文档
           </button>
         </div>
       </template>
@@ -828,32 +828,32 @@ const { locale } = useI18n()
 
 const columns: Column[] = [
   { key: 'select', label: '', sortable: false, class: 'w-12 text-center' },
-  { key: 'id', label: '任务名称', sortable: false, class: 'w-[240px] max-w-[240px]' },
-  { key: 'model', label: '模型', sortable: false, class: 'w-[180px] max-w-[180px] text-center' },
-  { key: 'api_key_name', label: '提交密钥', sortable: false, class: 'w-40 max-w-40 text-center' },
-  { key: 'status', label: '状态', sortable: false, class: 'w-28 text-center' },
-  { key: 'counts', label: '结果', sortable: false, class: 'w-32 text-center' },
-  { key: 'cost', label: '费用', sortable: false, class: 'w-36 text-center' },
-  { key: 'downloaded', label: '下载状态', sortable: false, class: 'w-40 text-center' },
-  { key: 'actions', label: '操作', sortable: false, class: 'w-40 text-center' },
+  { key: 'id', label: '任务名', sortable: false, class: 'w-[240px] max-w-[240px]' },
+  { key: 'model', label: '所用模型', sortable: false, class: 'w-[180px] max-w-[180px] text-center' },
+  { key: 'api_key_name', label: '所用密钥', sortable: false, class: 'w-40 max-w-40 text-center' },
+  { key: 'status', label: '当前状态', sortable: false, class: 'w-28 text-center' },
+  { key: 'counts', label: '产出数量', sortable: false, class: 'w-32 text-center' },
+  { key: 'cost', label: '计费金额', sortable: false, class: 'w-36 text-center' },
+  { key: 'downloaded', label: '是否已下载', sortable: false, class: 'w-40 text-center' },
+  { key: 'actions', label: '可用操作', sortable: false, class: 'w-40 text-center' },
 ]
 
 const statusFilterOptions: SelectOption[] = [
   { value: '', label: '全部状态' },
-  { value: 'queued', label: '排队中' },
-  { value: 'running', label: '生成中' },
-  { value: 'processing_results', label: '整理结果' },
-  { value: 'settling', label: '结算中' },
+  { value: 'queued', label: '等待排队' },
+  { value: 'running', label: '正在生成' },
+  { value: 'processing_results', label: '结果整理中' },
+  { value: 'settling', label: '正在结算' },
   { value: 'completed', label: '已完成' },
-  { value: 'failed', label: '失败' },
-  { value: 'cancelled', label: '已取消' },
-  { value: 'output_deleted', label: '结果已删除' },
+  { value: 'failed', label: '执行失败' },
+  { value: 'cancelled', label: '已撤销' },
+  { value: 'output_deleted', label: '结果已清理' },
 ]
 
 const downloadFilterOptions: SelectOption[] = [
-  { value: '', label: '全部下载状态' },
-  { value: 'true', label: '已下载' },
-  { value: 'false', label: '未下载' },
+  { value: '', label: '不限下载状态' },
+  { value: 'true', label: '已下载过' },
+  { value: 'false', label: '尚未下载' },
 ]
 
 const form = reactive({
@@ -944,7 +944,7 @@ const filteredApiKeys = computed(() => {
 })
 
 const apiKeyFilterOptions = computed<SelectOption[]>(() => [
-  { value: '', label: '全部 API Key' },
+  { value: '', label: '全部 API Key 列表' },
   ...geminiApiKeys.value.map(key => ({
     value: String(key.id),
     label: key.name || `API Key #${key.id}`,
@@ -1019,7 +1019,7 @@ const endpointBase = computed(() => {
   const configured = appStore.apiBaseUrl?.trim()
   if (configured) return configured.replace(/\/+$/, '')
   if (typeof window !== 'undefined') return window.location.origin.replace(/\/+$/, '')
-  return '<你的 Sub2API API 端点>'
+  return '<请替换为你的 Sub2API 接口地址>'
 })
 
 const selectedModelReferenceLimit = computed(() => referenceImageLimitForModel(form.model))
@@ -1055,70 +1055,70 @@ function referenceImageLimitForModel(model: string) {
 
 const agentInstruction = computed(() => `---
 name: sub2api-batch-image
-description: 当用户希望用 Gemini/Vertex 批量生成图片、批量跑提示词、下载批量生图结果、重试失败图片时使用。
+description: 当用户希望通过 Gemini/Vertex 批量出图、批量执行提示词、获取批量生图结果或对失败图片发起重试时调用。
 ---
 
-你是 Codex 中的批量生图执行 Agent。用户不需要手动填写页面表单；你应从当前聊天、用户给的文件、目录或上下文中整理任务名称、prompt 列表和输出目录，只有缺少关键决策时才向用户提问。
+你是在 Codex 中负责批量生图的执行型 Agent。用户不必手动操作页面表单；你应当从当前对话、用户提供的文件、目录或上下文中提取任务名、Prompt 清单和输出目录，仅在缺失关键判断时才向用户确认。
 
-默认端点：
+默认接口地址：
 ${endpointBase.value}
 
-你需要自己完成：
-1. 从用户聊天或附件中提取 prompt。每条 prompt 保留完整文本，按顺序生成稳定 custom_id，例如 img_001、img_002。
-2. 从用户要求或上下文推断任务名称；没有明确名称时用当前时间生成任务名。
-3. 从用户要求或上下文推断输出目录；如果用户没有说保存到哪里，才询问用户。
-4. 提交前必须先计算 expected_output_count = 所有 item 的 output_count 之和。单个批量任务硬性最多 200 张输出图；超过 200 张必须拆成多组任务，不能提交一个超大任务，也不能把参考图附件上限当成生成张数上限。
-5. 如果用户提供参考图，把参考图按用途绑定到具体 item。参考图只是输入附件，不是输出图数量。模型单条限制必须按模型执行：Gemini 2.5 Flash Image 每条最多 3 张参考图；Gemini 3 Pro Image 每条最多 14 张参考图。不要把后端附件风控理解成 Pro 单条能力：按 output_count 展开后，所有 item 的参考图附件总数还有内部保护阈值 1000 个，inline base64 参考图解码后总量最多 128MB。这个 1000 只是服务器拒绝异常请求的保护阈值，不是推荐规模；参考图很多或总请求体较大时应主动拆分任务。
-6. 参考图会按 output_count 重复消耗输入 token；大量任务、重复复用同一张参考图或参考图总体积较大时，优先使用 gs:// file_uri 或拆分成多组任务。
-7. 选择 API Key 和模型：先获取当前可用的批量生图 Key/模型；如果用户指定模型且该 Key 支持，则使用用户指定模型；否则使用该 Key 可用模型中的默认/第一个。不要展示或询问内部 provider 名称。
-8. 调用批量生图 API 提交、轮询、下载，不要求用户去页面里手填。
+你需要自行完成以下事项：
+1. 从用户对话或附件中提取 Prompt。每条 Prompt 需保留完整文本，并按顺序生成稳定的 custom_id，例如 img_001、img_002。
+2. 根据用户意图或上下文推断任务名；若未明确指定，则用当前时间自动生成。
+3. 根据用户意图或上下文推断输出目录；仅当用户未说明保存位置时才主动询问。
+4. 提交前必须先计算 expected_output_count，即所有 item 的 output_count 之和。单个批量任务的输出图硬性上限为 200 张；超出 200 张时必须拆分为多组任务，不可提交一个超大任务，也不可把参考图附件上限等同于出图张数上限。
+5. 如果用户提供了参考图，需按用途将参考图绑定到对应 item。参考图仅作为输入附件，不代表出图数量。模型单条限制须严格按模型执行：Gemini 2.5 Flash Image 每条上限 3 张参考图；Gemini 3 Pro Image 每条上限 14 张参考图。不要把后端附件风控阈值误读为 Pro 的单条能力：按 output_count 展开后，所有 item 的参考图附件总数还有 1000 个内部保护阈值，且 inline base64 参考图解码后总量上限为 128MB。该 1000 仅为服务器拒绝异常请求的保护阈值，并非推荐规模；参考图较多或总体积较大时应主动拆分任务。
+6. 参考图会按 output_count 等比例消耗输入 token；当任务量较大、同一张参考图被多次复用或参考图总体积较大时，优先使用 gs:// file_uri 或拆分为多组任务。
+7. 选择 API Key 与模型：先获取当前可用的批量生图 Key 及模型；若用户指定了模型且该 Key 支持，则采用用户指定模型；否则使用该 Key 可用模型中的默认或第一个。不要展示或询问内部 provider 名称。
+8. 调用批量生图 API 完成提交、轮询和下载，不要要求用户手动在页面操作。
 
 API 调用规范：
-- 模型：GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/models')}
-- 提交：POST ${joinEndpointPath(endpointBase.value, '/v1/images/batches')}
-- 查询：GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}')}
-- 明细：GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}/items')}
-- 下载：GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}/download')}
-- 取消：POST ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}/cancel')}
+- 模型列表：GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/models')}
+- 提交任务：POST ${joinEndpointPath(endpointBase.value, '/v1/images/batches')}
+- 查询状态：GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}')}
+- 获取明细：GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}/items')}
+- 下载结果：GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}/download')}
+- 撤销任务：POST ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}/cancel')}
 
 提交请求体：
 {
-  "model": "<按所选 Key 可用模型填写>",
-  "task_name": "<从聊天推断；为空则用当前时间>",
+  "model": "<按所选 Key 支持的模型填写>",
+  "task_name": "<从对话推断；留空则用当前时间>",
   "image_size": "1K",
   "response_mime_type": "image/png",
   "items": [
     {
       "custom_id": "img_001",
-      "prompt": "<第一条完整 prompt>",
+      "prompt": "<第一条 Prompt 的完整文本>",
       "output_count": 1,
       "reference_images": [
         {
           "id": "face",
           "type": "subject",
           "mime_type": "image/png",
-          "data": "<base64，不含 data:image/png;base64, 前缀>"
+          "data": "<base64 编码，不含 data:image/png;base64, 前缀>"
         }
       ]
     }
   ]
 }
 
-必须遵守：
-- 不要把 API Key 写入仓库、日志、提交记录或最终回复。
-- 不要把参考图 base64 写入最终回复、日志或公开文件。恢复记录中只保存参考图文件名、用途、数量和请求 JSON 文件路径；若请求 JSON 文件包含 base64，应保存在用户指定输出目录且不要提交到仓库。
-- output_count 表示同一 prompt 和参考图重复生成几张，默认 1，每条最多 4；这不是依赖 Gemini 单次请求返回多图，而是系统展开成多个真实任务项。提交前必须确认预计输出图总数不超过 200，超过就拆分成多组任务。绝不能因为参考图附件有更高的内部保护阈值，就提交会生成超过 200 张图的任务。
-- 当前对用户的批量生图计费仍按成功输出图片数量结算，不单独对参考图加价。可以向用户说明：参考图会产生少量上游输入 token 和临时存储成本，且会随 output_count 重复计算；页面显示的冻结/结算金额按输出图片数量计算。
-- 提交成功后，必须立刻在输出目录写入本地恢复记录，例如 batch-image-resume.json。不要在恢复记录里保存 API Key。
-- 恢复记录至少包含：endpoint、task_name、batch_id、model、output_dir、request_file、submitted_at、last_status、status_url、items_url、download_url、prompt_count、expected_output_count，以及可用于失败重试的 custom_id 到 prompt 映射或请求 JSON 文件路径。
-- 每次查询状态后更新恢复记录，写入 last_checked_at、last_status、成功数、失败数、实际扣费和失败摘要。会话中断或暂停后，下次必须能凭该文件继续查询、下载或重试。
-- 不要高频轮询。首次查询等待约 20 到 30 秒；queued 状态每 60 到 120 秒查询一次；如果连续 3 次仍是 queued，就先停止主动查询，告诉用户任务仍在排队，并保留恢复记录，之后可继续其他任务或等待用户稍后让你恢复。
-- running 状态每约 60 秒查询一次，服务器压力大或大批量任务时可以更久；processing_results 等接近完成的状态可每 20 到 45 秒查询一次。
-- 任务完成后报告任务名、任务 id、成功数、失败数、实际扣费和保存路径。
-- 只下载成功图片。部分失败时，先展示失败 custom_id、错误码、错误来源和简要原因。
-- 重试只能重试失败项，不能重复提交已成功项。若历史任务没有保存失败项 prompt，必须告诉用户无法自动重试，并询问用户是否提供原 prompt。
-- 取消任务前必须提醒：已被系统索引为成功的图片仍会按成功项结算扣费，其余冻结金额会释放。
-- 图片预览按需加载；不要为了查看列表自动批量加载图片内容。`)
+务必遵守：
+- 严禁将 API Key 写入代码仓库、日志、提交记录或最终回复。
+- 严禁将参考图 base64 写入最终回复、日志或公开文件。恢复记录中仅保存参考图的文件名、用途、数量及请求 JSON 文件路径；若请求 JSON 文件内含 base64，应保存在用户指定的输出目录中，且不要提交到仓库。
+- output_count 表示同一 Prompt 及参考图重复出图的张数，默认 1，每条上限 4；这不依赖 Gemini 单次请求返回多图，而是由系统展开为多个真实任务项。提交前必须确认预计出图总数不超过 200，超出则拆分为多组任务。绝不可因参考图附件具有更高的内部保护阈值，就提交会生成超过 200 张图的任务。
+- 当前批量生图对用户按成功输出的图片张数计费结算，参考图不单独收费。可向用户解释：参考图会产生少量下游输入 token 及临时存储成本，且会随 output_count 重复计算；页面展示的冻结及结算金额均按输出图片张数统计。
+- 提交成功后，必须立即在输出目录写入本地恢复记录（例如 batch-image-resume.json）。恢复记录中不得保存 API Key。
+- 恢复记录至少包含：endpoint、task_name、batch_id、model、output_dir、request_file、submitted_at、last_status、status_url、items_url、download_url、prompt_count、expected_output_count，以及可用于失败重试的 custom_id 到 Prompt 的映射或请求 JSON 文件路径。
+- 每次查询状态后都需更新恢复记录，写入 last_checked_at、last_status、成功数、失败数、实际扣费及失败摘要。即使会话中断或暂停，下次也必须能凭该文件继续查询、下载或重试。
+- 严禁高频轮询。首次查询应等待约 20 至 30 秒；处于 queued 状态时每 60 至 120 秒查询一次；若连续 3 次仍为 queued，则暂停主动查询，告知用户任务仍在排队并保留恢复记录，之后可继续处理其他任务或等待用户稍后恢复。
+- 处于 running 状态时约每 60 秒查询一次，服务器压力较大或批量任务较大时可适当延长；处于 processing_results 等接近完成的状态时可每 20 至 45 秒查询一次。
+- 任务完成后需汇报任务名、任务 ID、成功数、失败数、实际扣费及保存路径。
+- 仅下载成功的图片。存在部分失败时，先列出失败的 custom_id、错误码、错误来源及简要原因。
+- 重试仅针对失败项，不可重复提交已成功项。若历史任务未保存失败项的 Prompt，必须告知用户无法自动重试，并询问是否由用户提供原始 Prompt。
+- 撤销任务前必须提醒：已被系统标记为成功的图片仍会按成功项计费扣款，其余冻结额度将被退回。
+- 图片预览采用按需加载；不要为了查看列表而自动批量加载图片内容。`)
 
 function joinEndpointPath(base: string, path: string): string {
   return `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`
@@ -1179,26 +1179,26 @@ async function handleReferenceImageFiles(event: Event) {
   if (files.length === 0) return
   const limit = selectedModelReferenceLimit.value
   if (limit <= 0) {
-    appStore.showError('当前模型不支持参考图。')
+    appStore.showError('所选模型不支持上传参考图。')
     return
   }
   const slots = Math.max(0, limit - referenceImageDrafts.value.length)
   if (slots <= 0) {
-    appStore.showError(`当前模型每条最多 ${limit} 张参考图。`)
+    appStore.showError(`所选模型每条 Prompt 最多支持 ${limit} 张参考图。`)
     return
   }
   const accepted = files.slice(0, slots)
   if (accepted.length < files.length) {
-    appStore.showError(`当前模型每条最多 ${limit} 张参考图，已忽略超出的文件。`)
+    appStore.showError(`所选模型每条 Prompt 最多 ${limit} 张参考图，超出的文件已被忽略。`)
   }
   const next: ReferenceImageDraft[] = []
   for (const file of accepted) {
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-      appStore.showError('参考图仅支持 PNG、JPEG 或 WebP。')
+      appStore.showError('参考图仅接受 PNG、JPEG 或 WebP 格式。')
       continue
     }
     if (file.size > 10 * 1024 * 1024) {
-      appStore.showError(`${file.name} 超过 10MB，已忽略。`)
+      appStore.showError(`${file.name} 大小超出 10MB，已跳过。`)
       continue
     }
     const data = await readFileAsBase64(file)
@@ -1479,7 +1479,7 @@ function openPromptPopover(target: HTMLElement, value: string) {
 
 function copyPromptPopover() {
   if (!promptPopover.text) return
-  void copyToClipboard(promptPopover.text, 'Prompt 已复制')
+  void copyToClipboard(promptPopover.text, 'Prompt 已复制到剪贴板')
 }
 
 async function loadBatchJobs() {
@@ -1803,7 +1803,7 @@ async function retryFailedJob(job: BatchImageJobRow | BatchImageJob) {
       key.key,
       {
         model: job.model,
-        task_name: `${job.task_name || defaultTaskName()} 重试失败项`,
+        task_name: `${job.task_name || defaultTaskName()} 失败项重试`,
         parent_batch_id: rootBatchIdForRetry(job),
         provider: job.provider,
         image_size: '1K',
@@ -2212,8 +2212,8 @@ function detailJobsForBatch(batchId: string): BatchImageJobRow[] {
 
 function detailSourceName(job: Pick<BatchImageJobRow, 'id' | 'task_name' | 'parent_batch_id'>, rootBatchId: string) {
   const name = job.task_name || job.id
-  if (job.id === rootBatchId) return `主任务：${name}`
-  return `子任务：${name}`
+  if (job.id === rootBatchId) return `主任务 - ${name}`
+  return `子任务 - ${name}`
 }
 
 async function loadItemPreview(item: BatchImageItem) {
@@ -2293,15 +2293,15 @@ function statusLabel(jobOrStatus: BatchImageStatus | Pick<BatchImageJob, 'status
     return '全部失败'
   }
   const labels: Record<string, string> = {
-    queued: '排队中',
-    running: '生成中',
-    indexing: '整理结果',
-    processing_results: '整理结果',
-    settling: '结算中',
+    queued: '等待排队',
+    running: '正在生成',
+    indexing: '结果整理中',
+    processing_results: '结果整理中',
+    settling: '正在结算',
     completed: '已完成',
-    failed: '失败',
-    cancelled: '已取消',
-    output_deleted: '结果已删除',
+    failed: '执行失败',
+    cancelled: '已撤销',
+    output_deleted: '结果已清理',
   }
   return labels[status] || status
 }
@@ -2320,17 +2320,17 @@ function statusBadgeClass(jobOrStatus: BatchImageStatus | Pick<BatchImageJob, 's
 
 function itemStatusLabel(status: string) {
   const labels: Record<string, string> = {
-    pending: '排队中',
-    succeeded: '成功',
-    success: '成功',
-    failed: '失败',
-    cancelled: '已取消',
+    pending: '排队等待',
+    succeeded: '生成成功',
+    success: '生成成功',
+    failed: '生成失败',
+    cancelled: '已撤销',
   }
   return labels[status] || status
 }
 
 function itemDisplayStatusLabel(item: BatchImageDetailItem) {
-  if (isRecoveredOriginalFailure(item)) return '已补成功'
+  if (isRecoveredOriginalFailure(item)) return '已由重试补齐'
   return itemStatusLabel(item.status)
 }
 
@@ -2346,14 +2346,14 @@ function itemDisplayStatusBadgeClass(item: BatchImageDetailItem) {
 }
 
 function itemResultLabel(item: BatchImageDetailItem) {
-  if (isRecoveredOriginalFailure(item)) return '旧失败已由重试子任务补成功'
+  if (isRecoveredOriginalFailure(item)) return '原失败项已被重试任务补齐'
   if (item.error) return friendlyItemError(item.error)
   if (item.status === 'succeeded' || item.status === 'success') {
-    return itemPreviewUrls[itemPreviewKey(item)] ? '图片已生成，可点击预览' : '图片已生成，可下载'
+    return itemPreviewUrls[itemPreviewKey(item)] ? '图片已生成，点击可预览' : '图片已生成，可打包下载'
   }
-  if (item.status === 'failed') return '未生成可用图片'
-  if (item.status === 'cancelled') return '任务已取消'
-  return '等待生成结果'
+  if (item.status === 'failed') return '未能生成可用图片'
+  if (item.status === 'cancelled') return '该任务已撤销'
+  return '等待出图结果'
 }
 
 function itemResultClass(item: BatchImageDetailItem) {
@@ -2365,8 +2365,8 @@ function itemResultClass(item: BatchImageDetailItem) {
 
 function friendlyItemError(error: BatchImageItem['error']) {
   if (!error) return '-'
-  if (error.code === 'EMPTY_IMAGE_OUTPUT') return '上游返回了结果，但这条没有图片内容。通常是 Gemini/Vertex 单条生成失败或被安全策略拦截。'
-  if (error.code === 'PROVIDER_ITEM_FAILED') return '上游返回的这条结果没有可用图片。'
+  if (error.code === 'EMPTY_IMAGE_OUTPUT') return '下游服务已返回结果，但该条目未包含图片内容。通常原因是 Gemini/Vertex 单条生成失败或命中了安全策略。'
+  if (error.code === 'PROVIDER_ITEM_FAILED') return '下游服务返回的该条结果中不包含可用图片。'
   return error.message || error.code || '-'
 }
 
@@ -2382,7 +2382,7 @@ function terminalZeroCost(job: Pick<BatchImageJob, 'status' | 'actual_cost'>) {
 function costLabel(job: Pick<BatchImageJob, 'status' | 'hold_amount' | 'actual_cost'>) {
   if (job.actual_cost !== null) return formatMoney(job.actual_cost)
   if (terminalZeroCost(job)) return formatMoney(0)
-  return `冻结 ${formatMoney(job.hold_amount)}`
+  return `已冻结 ${formatMoney(job.hold_amount)}`
 }
 
 type BatchImageTextKey =
@@ -2451,124 +2451,124 @@ function isZhLocale() {
 
 function batchImageText(key: BatchImageTextKey) {
   const zh: Record<BatchImageTextKey, string> = {
-    loadKeysFailed: '加载 API Key 失败',
-    loadModelsFailed: '加载可用模型失败',
-    loadJobsFailed: '加载批量任务失败',
-    selectApiKey: '请选择可用的 Gemini API Key',
-    noModelsForKey: '当前密钥没有可用的批量生图模型',
-    selectModel: '请选择模型',
-    promptRequired: '请至少填写一条 prompt',
-    submitted: '批量任务已提交',
-    submitFailed: '提交失败',
-    refreshFailed: '刷新失败',
-    cancelConfirm: '取消会请求上游取消；已被系统索引为成功的图片仍会按成功项结算扣费，其余冻结金额会释放。确定取消吗？',
-    cancelled: '已请求取消任务',
-    cancelFailed: '取消失败',
-    batchDownloadStarted: '已开始下载选中的任务',
-	    downloadFailed: '下载失败',
-	    retrySubmitted: '已提交失败项重试任务',
-	    retryFailed: '重试失败项失败',
-	    retryMissingPrompts: '这个任务没有保存失败项 prompt，无法自动重试。请复制原 prompt 后重新创建任务。',
-    deleteConfirm: '删除后这个任务会从你的列表隐藏，但账务记录仍会保留。确定删除吗？',
-    deleteSelectedConfirm: '删除后选中的任务会从你的列表隐藏，但账务记录仍会保留。确定删除吗？',
+    loadKeysFailed: 'API Key 列表加载失败',
+    loadModelsFailed: '可用模型列表加载失败',
+    loadJobsFailed: '批量任务记录加载失败',
+    selectApiKey: '请选择一个可用的 Gemini API Key',
+    noModelsForKey: '当前密钥下没有可用的批量生图模型',
+    selectModel: '请选择一个模型',
+    promptRequired: '请至少添加一条 Prompt',
+    submitted: '批量任务已成功提交',
+    submitFailed: '任务提交失败',
+    refreshFailed: '任务状态刷新失败',
+    cancelConfirm: '撤销任务会向下游服务发出取消请求；已标记为成功的图片仍会正常计费扣款，其余冻结额度将被退回。是否确认撤销？',
+    cancelled: '已发出任务撤销请求',
+    cancelFailed: '任务撤销失败',
+    batchDownloadStarted: '选中任务的下载已开始执行',
+	    downloadFailed: '结果文件下载失败',
+	    retrySubmitted: '失败项重试任务已提交',
+	    retryFailed: '失败项重试提交失败',
+	    retryMissingPrompts: '该任务没有保存失败项的 Prompt，因此无法自动重试。请复制原始 Prompt 后重新创建任务。',
+    deleteConfirm: '删除后该任务将从列表中隐藏，账务记录仍会保留。是否确认删除？',
+    deleteSelectedConfirm: '删除后所选任务将从列表中隐藏，账务记录仍会保留。是否确认删除？',
     deleted: '任务记录已删除',
-    deleteFailed: '删除任务记录失败',
-	    loadItemsFailed: '加载明细失败',
-	    loadPreviewFailed: '加载图片预览失败',
-    copiedInstruction: '已复制批量生图说明',
-    loadingModels: '加载可用模型中...',
-    noModels: '无可用模型',
-    noModelsHint: '当前密钥所属分组没有配置可用于批量生图的模型。',
-    noCompatibleAccount: '当前密钥所属分组没有可用的批量生图上游账号。请联系管理员检查：该分组是否绑定了可调度的 Gemini API Key 或 Vertex 服务账号，以及账号是否支持所选模型。',
-    unsupportedProvider: '这个任务使用的批量生图通道当前不可用。请联系管理员检查批量生图通道配置。',
-    providerSubmitFailed: '上游批量生图任务提交失败。请联系管理员检查上游账号状态、模型权限或服务状态。',
-    vertexGcsBucketMissing: 'Vertex 批量生图缺少托管 GCS 存储桶配置。请联系管理员配置 BATCH_IMAGE_VERTEX_MANAGED_GCS_BUCKET 后再提交。',
-    queueFailed: '任务队列暂时不可用，批量任务没有成功入队。请联系管理员检查队列服务。',
-    billingHoldFailed: '费用冻结失败，批量任务没有成功提交。请联系管理员检查余额冻结或计费服务。',
-    groupDisabled: '当前密钥所属分组没有开启批量生图。你可以换一个已开启批量生图的密钥，或联系管理员开启。',
-    pricingMissing: '所选模型还没有配置批量生图价格。请联系管理员补充价格配置。',
-    insufficientBalance: '余额不足，无法冻结本次批量生图费用。',
-    invalidModel: '请选择一个可用于当前密钥的批量生图模型。',
-    invalidItems: 'Prompt 列表格式不正确，请检查是否为空、是否超过数量限制，或图片尺寸是否仍为 1K。',
-    duplicateCustomId: 'Prompt 列表里的 custom_id 不能重复。',
-    promptTooLong: '单条 prompt 过长，请缩短后重试。',
-    invalidReferenceImage: '参考图格式不正确，请使用 10MB 以内的 PNG、JPEG 或 WebP。',
-    tooManyReferenceImages: '参考图数量超过限制：Flash Image 每条最多 3 张，Pro Image 每条最多 14 张，整组最多 1000 张。',
-    referenceImagesTooLarge: '参考图总量过大。inline 参考图整组最多 128MB；大量参考图请改用 gs:// file_uri 或拆分任务。',
-    tooManyOutputImages: '预计生成张数超过限制：每条最多 4 张，整组最多 200 张。',
-    idempotencyConflict: '这次提交和之前的请求标识冲突，请刷新页面后重新提交。',
-    notReady: '任务还没有完成，完成后才能下载。',
-    outputDeleted: '这个任务的结果文件已经被清理，无法下载。',
-    resultMissing: '结果文件不可用，可能是上游结果文件已清理、存储权限异常，或管理员迁移过存储配置。请联系管理员检查结果文件。',
-    itemFailed: '这条明细没有成功图片，无法预览。',
-    itemImageIndexOutOfRange: '这条明细没有可预览的图片。',
-    downloadLimited: '当前下载请求太多，请稍后再试。',
-    downloadTooLarge: '这个 ZIP 太大，已超过单次下载限制。请减少单次下载数量，或联系管理员调整批量下载上限。',
-    deleteNotReady: '任务结束后才能删除记录。正在生成或结算中的任务请先等待完成。',
-    disabled: '批量生图功能当前未开启。',
-    authRequired: '当前 API Key 不可用或已失效，请重新选择密钥。',
-    adminReference: '请把错误码和请求 ID 发给管理员排查。',
-    errorReference: '错误信息',
+    deleteFailed: '任务记录删除失败',
+	    loadItemsFailed: '明细数据加载失败',
+	    loadPreviewFailed: '图片预览加载失败',
+    copiedInstruction: '批量生图指引文档已复制到剪贴板',
+    loadingModels: '可用模型加载中...',
+    noModels: '暂无可用模型',
+    noModelsHint: '当前密钥所属分组尚未配置可用于批量生图的模型。',
+    noCompatibleAccount: '当前密钥所属分组下没有可用的批量生图下游账号。请联系管理员核实：该分组是否绑定了可调度的 Gemini API Key 或 Vertex 服务账号，且账号是否支持所选模型。',
+    unsupportedProvider: '该任务使用的批量生图通道当前不可用。请联系管理员排查批量生图通道配置。',
+    providerSubmitFailed: '下游批量生图任务提交失败。请联系管理员排查下游账号状态、模型权限或服务可用性。',
+    vertexGcsBucketMissing: 'Vertex 批量生图缺少托管 GCS 存储桶配置。请联系管理员完成 BATCH_IMAGE_VERTEX_MANAGED_GCS_BUCKET 配置后再提交。',
+    queueFailed: '任务队列暂时不可用，批量任务未成功入队。请联系管理员排查队列服务。',
+    billingHoldFailed: '费用冻结失败，批量任务未成功提交。请联系管理员排查余额冻结或计费服务。',
+    groupDisabled: '当前密钥所属分组未开启批量生图能力。可更换一个已开启的密钥，或联系管理员开启。',
+    pricingMissing: '所选模型尚未配置批量生图价格。请联系管理员补充价格配置。',
+    insufficientBalance: '账户余额不足，无法冻结本次批量生图所需费用。',
+    invalidModel: '请选择一个当前密钥支持的批量生图模型。',
+    invalidItems: 'Prompt 列表格式校验未通过，请检查是否为空、是否超出数量限制，或图片尺寸是否仍为 1K。',
+    duplicateCustomId: 'Prompt 列表中的 custom_id 不可重复。',
+    promptTooLong: '单条 Prompt 文本过长，请缩短后重试。',
+    invalidReferenceImage: '参考图格式无效，请使用 10MB 以内的 PNG、JPEG 或 WebP 图片。',
+    tooManyReferenceImages: '参考图数量超出限制：Flash Image 每条上限 3 张，Pro Image 每条上限 14 张，整组任务上限 1000 张。',
+    referenceImagesTooLarge: '参考图总体积过大。inline 参考图整组上限 128MB；大量参考图请改用 gs:// file_uri 或拆分任务。',
+    tooManyOutputImages: '预估出图张数超出限制：每条上限 4 张，整组任务上限 200 张。',
+    idempotencyConflict: '本次提交与既有请求标识冲突，请刷新页面后重新提交。',
+    notReady: '任务尚未完成，完成后方可下载。',
+    outputDeleted: '该任务的结果文件已被清理，无法下载。',
+    resultMissing: '结果文件不可用。可能的原因包括：下游结果文件已被清理、存储权限异常，或管理员变更过存储配置。请联系管理员排查。',
+    itemFailed: '该条目没有成功的图片，无法预览。',
+    itemImageIndexOutOfRange: '该条目没有可预览的图片。',
+    downloadLimited: '当前并发下载请求过多，请稍后再试。',
+    downloadTooLarge: '该 ZIP 文件过大，已超出单次下载上限。请减少单次下载数量，或联系管理员调整批量下载限额。',
+    deleteNotReady: '仅任务结束后可删除记录。仍在生成或结算中的任务请先等待完成。',
+    disabled: '批量生图功能当前处于关闭状态。',
+    authRequired: '当前 API Key 不可用或已过期，请重新选择密钥。',
+    adminReference: '请将错误码和请求 ID 提供给管理员以便排查。',
+    errorReference: '错误详情',
   }
   const en: Record<BatchImageTextKey, string> = {
-    loadKeysFailed: 'Failed to load API keys.',
-    loadModelsFailed: 'Failed to load available models.',
-    loadJobsFailed: 'Failed to load batch jobs.',
-    selectApiKey: 'Select an available Gemini API key.',
-    noModelsForKey: 'This key has no available batch image models.',
-    selectModel: 'Select a model.',
-    promptRequired: 'Enter at least one prompt.',
-    submitted: 'Batch job submitted.',
-    submitFailed: 'Failed to submit the batch job.',
-    refreshFailed: 'Failed to refresh the job.',
-    cancelConfirm: 'Cancellation will be sent upstream. Images already indexed as successful will still be billed, and the remaining hold will be released. Continue?',
-    cancelled: 'Cancellation requested.',
-    cancelFailed: 'Failed to cancel the job.',
+    loadKeysFailed: 'Loading API keys failed.',
+    loadModelsFailed: 'Loading available models failed.',
+    loadJobsFailed: 'Loading batch jobs failed.',
+    selectApiKey: 'Please select an available Gemini API key.',
+    noModelsForKey: 'No batch image models are available under this key.',
+    selectModel: 'Please pick a model.',
+    promptRequired: 'Add at least one prompt to continue.',
+    submitted: 'The batch job has been submitted.',
+    submitFailed: 'Submitting the batch job failed.',
+    refreshFailed: 'Refreshing the job status failed.',
+    cancelConfirm: 'A cancellation request will be sent upstream. Images already indexed as successful remain billable, while the remaining hold will be released. Proceed?',
+    cancelled: 'The cancellation request has been sent.',
+    cancelFailed: 'Cancelling the job failed.',
     batchDownloadStarted: 'Downloads for the selected jobs have started.',
-	    downloadFailed: 'Failed to download the result.',
-	    retrySubmitted: 'Retry job submitted for failed items.',
-	    retryFailed: 'Failed to retry failed items.',
-	    retryMissingPrompts: 'This job does not have saved prompts for failed items, so it cannot be retried automatically. Recreate it with the original prompt.',
-    deleteConfirm: 'This hides the job from your list while keeping billing records. Delete it?',
-    deleteSelectedConfirm: 'This hides the selected jobs from your list while keeping billing records. Delete them?',
-    deleted: 'Job record deleted.',
-    deleteFailed: 'Failed to delete the job record.',
-	    loadItemsFailed: 'Failed to load item details.',
-	    loadPreviewFailed: 'Failed to load the image preview.',
-    copiedInstruction: 'Batch image instructions copied.',
+	    downloadFailed: 'Downloading the result archive failed.',
+	    retrySubmitted: 'A retry job for failed items has been submitted.',
+	    retryFailed: 'Retrying the failed items failed.',
+	    retryMissingPrompts: 'Prompts for failed items were not saved, so automatic retry is unavailable. Please recreate the job using the original prompts.',
+    deleteConfirm: 'This hides the job from your list but keeps billing records intact. Remove it?',
+    deleteSelectedConfirm: 'This hides the selected jobs from your list but keeps billing records intact. Remove them?',
+    deleted: 'The job record has been removed.',
+    deleteFailed: 'Removing the job record failed.',
+	    loadItemsFailed: 'Loading item details failed.',
+	    loadPreviewFailed: 'Loading the image preview failed.',
+    copiedInstruction: 'Batch image guide has been copied to the clipboard.',
     loadingModels: 'Loading available models...',
-    noModels: 'No available models',
-    noModelsHint: 'This key’s group has no models configured for batch image generation.',
-    noCompatibleAccount: 'No usable upstream batch image account is available for this key’s group. Contact an administrator to check the group’s schedulable Gemini API key or Vertex service account and model support.',
-    unsupportedProvider: 'The batch image provider for this job is not available. Contact an administrator to check the batch image provider configuration.',
-    providerSubmitFailed: 'The upstream batch image job failed to submit. Contact an administrator to check the upstream account, model permission, or provider status.',
-    vertexGcsBucketMissing: 'Vertex batch image generation is missing the managed GCS bucket configuration. Contact an administrator to configure BATCH_IMAGE_VERTEX_MANAGED_GCS_BUCKET before submitting again.',
-    queueFailed: 'The task queue is temporarily unavailable, so the batch job was not queued. Contact an administrator to check the queue service.',
-    billingHoldFailed: 'The cost hold failed, so the batch job was not submitted. Contact an administrator to check billing or balance hold service.',
-    groupDisabled: 'Batch image generation is not enabled for this key’s group. Choose another enabled key or contact an administrator.',
-    pricingMissing: 'The selected model does not have batch image pricing configured. Contact an administrator to add pricing first.',
-    insufficientBalance: 'Insufficient balance to hold the estimated batch image cost.',
-    invalidModel: 'Select a batch image model available for the current key.',
-    invalidItems: 'The prompt list is invalid. Check that it is not empty, within the item limit, and still using 1K image size.',
-    duplicateCustomId: 'Custom IDs in the prompt list must be unique.',
-    promptTooLong: 'One prompt is too long. Shorten it and try again.',
-    invalidReferenceImage: 'A reference image is invalid. Use PNG, JPEG, or WebP under 10 MB.',
-    tooManyReferenceImages: 'Too many reference images. Flash Image allows up to 3 per item, Pro Image allows up to 14, and each job allows up to 1000 total.',
-    referenceImagesTooLarge: 'Reference images are too large. Inline reference images are limited to 128 MB per job; use gs:// file_uri or split the job for large batches.',
-    tooManyOutputImages: 'Too many expected output images. Each prompt can request up to 4 images, and each job can generate up to 200 images.',
-    idempotencyConflict: 'This submission conflicts with a previous request ID. Refresh the page and submit again.',
-    notReady: 'The job is not complete yet. Download will be available after completion.',
-    outputDeleted: 'The result files for this job have already been cleaned up.',
-    resultMissing: 'The result file is unavailable. It may have been cleaned up, storage permissions may be broken, or storage settings may have changed. Contact an administrator to check the result file.',
-    itemFailed: 'This item has no successful image to preview.',
+    noModels: 'No models available',
+    noModelsHint: 'The group for this key has no models configured for batch image generation.',
+    noCompatibleAccount: 'No usable upstream batch image account exists for this key’s group. Ask an administrator to verify the group’s schedulable Gemini API key or Vertex service account and whether the model is supported.',
+    unsupportedProvider: 'The batch image provider used by this job is unavailable. Ask an administrator to check the batch image provider configuration.',
+    providerSubmitFailed: 'Submitting the upstream batch image job failed. Ask an administrator to check the upstream account, model permissions, or provider status.',
+    vertexGcsBucketMissing: 'Vertex batch image generation is missing the managed GCS bucket configuration. Ask an administrator to set up BATCH_IMAGE_VERTEX_MANAGED_GCS_BUCKET before submitting again.',
+    queueFailed: 'The task queue is temporarily unavailable, so the batch job could not be queued. Ask an administrator to inspect the queue service.',
+    billingHoldFailed: 'The cost hold failed, so the batch job was not submitted. Ask an administrator to inspect the billing or balance hold service.',
+    groupDisabled: 'Batch image generation is not enabled for this key’s group. Switch to an enabled key or contact an administrator.',
+    pricingMissing: 'Batch image pricing has not been configured for the selected model. Ask an administrator to add pricing first.',
+    insufficientBalance: 'The balance is too low to hold the estimated batch image cost.',
+    invalidModel: 'Please pick a batch image model supported by the current key.',
+    invalidItems: 'The prompt list failed validation. Make sure it is not empty, stays within the item limit, and still uses 1K image size.',
+    duplicateCustomId: 'Custom IDs within the prompt list must not repeat.',
+    promptTooLong: 'A prompt is too long. Shorten it and retry.',
+    invalidReferenceImage: 'A reference image is invalid. Please use PNG, JPEG, or WebP files under 10 MB.',
+    tooManyReferenceImages: 'Too many reference images. Flash Image permits up to 3 per item, Pro Image up to 14, and each job up to 1000 in total.',
+    referenceImagesTooLarge: 'Reference images exceed the size limit. Inline reference images are capped at 128 MB per job; use gs:// file_uri or split the job for larger sets.',
+    tooManyOutputImages: 'The expected output count is too high. Each prompt can request up to 4 images, and each job can produce up to 200.',
+    idempotencyConflict: 'This submission conflicts with an earlier request ID. Refresh the page and submit again.',
+    notReady: 'The job has not finished yet. Downloads become available once it completes.',
+    outputDeleted: 'The result files for this job have already been removed.',
+    resultMissing: 'The result file is unavailable. It may have been cleaned up, storage permissions may be broken, or storage settings may have changed. Ask an administrator to investigate.',
+    itemFailed: 'This item has no successful image available for preview.',
     itemImageIndexOutOfRange: 'This item has no previewable image.',
-    downloadLimited: 'Too many download requests are active. Please try again later.',
-    downloadTooLarge: 'This ZIP is too large for a single download. Download fewer items at once or ask an administrator to raise the batch download limit.',
-    deleteNotReady: 'Job records can only be deleted after the job finishes.',
-    disabled: 'Batch image generation is currently disabled.',
-    authRequired: 'The current API key is unavailable or expired. Select the key again.',
-    adminReference: 'Send the error code and request ID to an administrator for troubleshooting.',
-    errorReference: 'Error detail',
+    downloadLimited: 'Too many downloads are running concurrently. Please retry shortly.',
+    downloadTooLarge: 'This ZIP exceeds the single-download limit. Reduce the number of items per download, or ask an administrator to raise the batch download cap.',
+    deleteNotReady: 'A job record can only be removed after the job finishes.',
+    disabled: 'Batch image generation is currently turned off.',
+    authRequired: 'The current API key is unavailable or expired. Please select the key again.',
+    adminReference: 'Forward the error code and request ID to an administrator for diagnosis.',
+    errorReference: 'Error details',
   }
   return (isZhLocale() ? zh : en)[key]
 }
@@ -2578,9 +2578,9 @@ function batchImageErrorReference(error: any) {
   const code = String(error?.code || '').trim()
   const requestId = String(error?.requestId || '').trim()
   const status = String(error?.status || '').trim()
-  if (code) parts.push(isZhLocale() ? `错误码：${code}` : `code: ${code}`)
-  if (requestId) parts.push(isZhLocale() ? `请求 ID：${requestId}` : `request ID: ${requestId}`)
-  if (!code && status) parts.push(isZhLocale() ? `HTTP 状态：${status}` : `HTTP status: ${status}`)
+  if (code) parts.push(isZhLocale() ? `错误代码：${code}` : `code: ${code}`)
+  if (requestId) parts.push(isZhLocale() ? `请求标识：${requestId}` : `request ID: ${requestId}`)
+  if (!code && status) parts.push(isZhLocale() ? `HTTP 状态码：${status}` : `HTTP status: ${status}`)
   return parts.length ? `（${parts.join('，')}）` : ''
 }
 
