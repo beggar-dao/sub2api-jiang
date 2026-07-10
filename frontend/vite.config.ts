@@ -48,6 +48,7 @@ export default defineConfig(({ mode }) => {
       }),
       injectPublicSettings(backendUrl)
     ],
+    assetsInclude: ['**/*.pdf'],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),

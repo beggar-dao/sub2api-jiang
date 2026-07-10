@@ -424,6 +424,71 @@
             </div>
           </div>
         </section>
+
+        <!-- AI 学习 -->
+        <section class="mb-16">
+          <div class="mb-8 text-center">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">AI学习</h2>
+            <p class="mt-3 break-all text-sm text-gray-600 dark:text-dark-400">
+              视频学习链接：
+              <a
+                :href="videoLearnUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary-500 underline-offset-2 hover:text-primary-600 hover:underline"
+              >
+                {{ videoLearnUrl }}
+              </a>
+            </p>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2">
+            <div
+              v-for="card in aiLearningCards"
+              :key="card.title"
+              role="button"
+              tabindex="0"
+              @click="openPdf(card.pdf, card.title)"
+              @keydown.enter="openPdf(card.pdf, card.title)"
+              class="group relative flex min-h-[220px] cursor-pointer items-center justify-center rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:border-dark-700/50 dark:bg-dark-800/60"
+            >
+              <h3
+                class="bg-gradient-to-br from-primary-500 to-primary-600 bg-clip-text text-4xl font-bold text-transparent transition-transform group-hover:scale-105 md:text-5xl"
+              >
+                {{ card.title }}
+              </h3>
+              <Icon
+                name="arrowRight"
+                size="md"
+                class="absolute right-4 top-4 text-primary-500 opacity-0 transition-opacity group-hover:opacity-100"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- AI 学习 PDF 弹窗 -->
+        <BaseDialog
+          :show="pdfVisible"
+          :title="activeTitle"
+          width="full"
+          :close-on-click-outside="true"
+          @close="closePdf"
+        >
+          <div class="relative">
+            <iframe
+              v-if="pdfVisible"
+              :src="activePdf"
+              :title="activeTitle"
+              class="h-[80vh] w-full rounded-lg border-0 bg-white"
+              @load="onPdfLoaded"
+            />
+            <div
+              v-if="pdfLoading"
+              class="absolute inset-0 flex items-center justify-center rounded-lg bg-white/80 dark:bg-dark-900/80"
+            >
+              <span class="text-sm text-gray-500 dark:text-dark-400">加载中…</span>
+            </div>
+          </div>
+        </BaseDialog>
       </div>
     </main>
 
@@ -469,6 +534,9 @@ import { sanitizeUrl } from '@/utils/url'
 import cardAImg from '@/assets/icons/48661783663242_.pic_hd.jpg'
 import cardBImg1 from '@/assets/icons/48671783663257_.pic_hd.jpg'
 import cardBImg2 from '@/assets/icons/48691783663309_.pic_hd.jpg'
+import BaseDialog from '@/components/common/BaseDialog.vue'
+import aiModelsPdf from '@/assets/file/kai大模型技术之大模型概述.pdf'
+import aiKnowledgePdf from '@/assets/file/01-RAG-搭建企业私有&个人知识库.pdf'
 
 const { t } = useI18n()
 
@@ -494,6 +562,9 @@ const isDark = ref(document.documentElement.classList.contains('dark'))
 // GitHub URL
 const githubUrl = 'https://github.com/Wei-Shaw/sub2api'
 
+// 视频学习链接
+const videoLearnUrl = 'https://space.bilibili.com/562845090?spm_id_from=333.788.upinfo.detail.click'
+
 // Auth state
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const isAdmin = computed(() => authStore.isAdmin)
@@ -506,6 +577,34 @@ const userInitial = computed(() => {
 
 // Current year for footer
 const currentYear = computed(() => new Date().getFullYear())
+
+// AI 学习卡片
+const aiLearningCards = [
+  { title: 'AI大模型', pdf: aiModelsPdf },
+  { title: 'AI知识库', pdf: aiKnowledgePdf }
+]
+
+// PDF 弹窗
+const pdfVisible = ref(false)
+const pdfLoading = ref(false)
+const activePdf = ref('')
+const activeTitle = ref('')
+
+function openPdf(pdf: string, title: string) {
+  activePdf.value = pdf
+  activeTitle.value = title
+  pdfLoading.value = true
+  pdfVisible.value = true
+}
+
+function closePdf() {
+  pdfVisible.value = false
+  pdfLoading.value = false
+}
+
+function onPdfLoaded() {
+  pdfLoading.value = false
+}
 
 // Toggle theme
 function toggleTheme() {
